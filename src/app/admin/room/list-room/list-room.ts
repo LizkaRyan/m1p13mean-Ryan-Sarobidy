@@ -1,7 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { Room } from '../../../../types/api';
 import { FormGroup } from '@angular/forms';
-import { 
+import {
   lucideBox,
   lucidePlus,
   lucideEdit2,
@@ -9,6 +9,9 @@ import {
 } from '@ng-icons/lucide';
 import { provideIcons, NgIconComponent } from '@ng-icons/core';
 import { CommonModule } from '@angular/common';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-list-room',
@@ -21,65 +24,29 @@ export class ListRoom implements OnInit {
   @Input() boxForm!: FormGroup;
   @Input() editingIndex: number | null = null;
   boxes: Room[] = [];
+  private http = inject(HttpClient);
 
   ngOnInit(): void {
     this.loadSampleData();
   }
 
+  getRoom(): Observable<Room[]> {
+    return this.http.get<Room[]>(`${environment.baseUrl}/rooms`);
+  }
+
   loadSampleData(): void {
-    this.boxes = [
-      {
-        _id: '1',
-        name: "Box 1",
-        rentPrice: 1500,
-        status: { code: "AVAILABLE", label: "Disponible" },
-        floor: 2,
-        capacity: 6,
-        dimensions: { length: 8, height: 3, width: 6, area: 48 }
+    this.getRoom().subscribe({
+      next: (rooms: Room[]) => {
+        this.boxes = rooms; // Angular détecte correctement le changement
       },
-      {
-        _id: '2',
-        name: "Box 2",
-        rentPrice: 1220,
-        status: { code: "AVAILABLE", label: "Disponible" },
-        floor: 1,
-        capacity: 4,
-        dimensions: { length: 6, height: 3, width: 5, area: 30 }
-      },
-      {
-        _id: '3',
-        name: "Box 3",
-        rentPrice: 980,
-        status: { code: "RENTED", label: "Loué" },
-        floor: 1,
-        capacity: 2,
-        dimensions: { length: 4, height: 2.5, width: 4, area: 16 }
-      },
-      {
-        _id: '3',
-        name: "Box 3",
-        rentPrice: 980,
-        status: { code: "RENTED", label: "Loué" },
-        floor: 1,
-        capacity: 2,
-        dimensions: { length: 4, height: 2.5, width: 4, area: 16 }
-      },
-      {
-        _id: '3',
-        name: "Box 3",
-        rentPrice: 980,
-        status: { code: "RENTED", label: "Loué" },
-        floor: 1,
-        capacity: 2,
-        dimensions: { length: 4, height: 2.5, width: 4, area: 16 }
-      }
-    ];
+      error: (err) => console.error('Error loading rooms:', err)
+    });
   }
 
   editBox(index: number): void {
     const box = this.boxes[index];
     this.editingIndex = index;
-    
+
     this.boxForm.patchValue({
       name: box.name,
       rentPrice: box.rentPrice,

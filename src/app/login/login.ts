@@ -22,7 +22,7 @@ export class Login {
   constructor(private router: Router, private authService: AuthService) { }
 
   onLogin(): void {
-    const loginResponse = this.login({ email: this.email, password: this.password }).subscribe({
+    this.login({ email: this.email, password: this.password }).subscribe({
       next: (res) => {
         this.authService.setRole(res.user.role);
         this.authService.setToken(res.token);
@@ -37,8 +37,6 @@ export class Login {
         this.router.navigate(['/accueil']);
       }
     });
-    console.log('Login response:', loginResponse);
-
   }
 
   login({ email, password }): Observable<LoginResponse> {
