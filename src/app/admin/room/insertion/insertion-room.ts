@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Room } from '../../../../types/api';
 import {
@@ -22,12 +22,18 @@ import { RoomService } from '../../../services/room-service';
   styleUrl: './insertion-room.css',
   providers: [provideIcons({ maximize: lucideMaximize, plus: lucidePlus, edit: lucideEdit2, box: lucideBox })]
 })
-export class InsertionRoom {
+export class InsertionRoom implements OnInit {
   @Input() boxForm!: FormGroup;
-  @Input() editingIndex: number | null = null;
+  editingIndex: string | null = null;
   private http = inject(HttpClient);
 
-  constructor(private fb: FormBuilder,private roomService: RoomService) { }
+  constructor(private fb: FormBuilder, private roomService: RoomService) { }
+
+  ngOnInit(): void {
+    this.roomService.editingIndex$.subscribe(id => {
+      this.editingIndex = id;
+    });
+  }
 
   statusOptions = [
     { code: 'AVAILABLE', label: 'Disponible' },
@@ -38,6 +44,23 @@ export class InsertionRoom {
 
   postBox(box: Room): Observable<Room[]> {
     return this.http.post<Room[]>(`${environment.baseUrl}/rooms`, box);
+  }
+
+  putBox(box: Room): Observable<Room[]> {
+    return this.http.put<Room[]>(`${environment.baseUrl}/rooms/${this.editingIndex}`, box);
+  }
+
+  cancelEdit(): void {
+    this.roomService.setEditingIndex(null);
+    this.boxForm.reset({
+      statusCode: 'AVAILABLE',
+      floor: 1,
+      capacity: 1,
+      rentPrice: 0,
+      length: 0,
+      height: 0,
+      width: 0
+    });
   }
 
   onSubmit(): void {
@@ -65,12 +88,23 @@ export class InsertionRoom {
         }
       };
 
-      this.postBox(box).subscribe({
-        next: (rooms: Room[]) => {
-          this.roomService.setBoxes(rooms); // Angular détecte correctement le changement
-        },
-        error: (err) => console.error('Error loading rooms:', err)
-      });
+      if (this.editingIndex === null) {
+        this.postBox(box).subscribe({
+          next: (rooms: Room[]) => {
+            this.roomService.setBoxes(rooms); // Angular détecte correctement le changement
+          },
+          error: (err) => console.error('Error loading rooms:', err)
+        });
+        console.log('Création du box :', box);
+      }
+      else {
+        this.putBox(box).subscribe({
+          next: (rooms: Room[]) => {
+            this.roomService.setBoxes(rooms); // Angular détecte correctement le changement
+          },
+          error: (err) => console.error('Error loading rooms:', err)
+        });
+      }
 
       this.boxForm.reset({
         statusCode: 'AVAILABLE',

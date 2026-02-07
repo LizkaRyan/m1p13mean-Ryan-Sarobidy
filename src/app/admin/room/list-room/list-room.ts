@@ -10,7 +10,7 @@ import {
 import { provideIcons, NgIconComponent } from '@ng-icons/core';
 import { CommonModule } from '@angular/common';
 import { RoomService } from '../../../services/room-service';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-list-room',
@@ -21,14 +21,18 @@ import { Observable } from 'rxjs';
 })
 export class ListRoom implements OnInit {
   @Input() boxForm!: FormGroup;
-  @Input() editingIndex: number | null = null;
   searchTerm: string = '';
-  filteredBoxes$:Observable<Room[]>;
+  filteredBoxes$: Observable<Room[]>;
+  editingIndex: string | null = null;
+
 
   constructor(private roomService: RoomService) { }
 
   ngOnInit(): void {
     this.filteredBoxes$ = this.roomService.filteredBoxes$;
+    this.roomService.editingIndex$.subscribe(id => {
+      this.editingIndex = id;
+    });
   }
 
 
@@ -36,9 +40,9 @@ export class ListRoom implements OnInit {
     this.searchTerm = searchValue;
   }
 
-  editBox(index: number): void {
-    const box = this.roomService.boxes$[index];
-    this.editingIndex = index;
+  async editBox(id: string): Promise<void> {
+    const boxes = await firstValueFrom(this.roomService.boxes$);
+    const box = boxes.find(b => b._id === id);
 
     this.boxForm.patchValue({
       name: box.name,
@@ -50,28 +54,25 @@ export class ListRoom implements OnInit {
       height: box.dimensions.height,
       width: box.dimensions.width
     });
+
+    this.roomService.setEditingIndex(id);
   }
 
-  deleteBox(index: number): void {
+  deleteBox(id: string): void {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce box ?')) {
       //this.roomService.boxes$.splice(index, 1);
-      if (this.editingIndex === index) {
-        this.cancelEdit();
+      if (this.editingIndex === id) {
+        this.boxForm.reset({
+          statusCode: 'AVAILABLE',
+          floor: 1,
+          capacity: 1,
+          rentPrice: 0,
+          length: 0,
+          height: 0,
+          width: 0
+        });
       }
     }
-  }
-
-  cancelEdit(): void {
-    this.editingIndex = null;
-    this.boxForm.reset({
-      statusCode: 'AVAILABLE',
-      floor: 1,
-      capacity: 1,
-      rentPrice: 0,
-      length: 0,
-      height: 0,
-      width: 0
-    });
   }
 
   getStatusBadgeClass(statusCode: string): string {

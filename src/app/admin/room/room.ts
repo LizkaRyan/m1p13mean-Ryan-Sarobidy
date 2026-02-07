@@ -18,7 +18,6 @@ import { RoomService } from '../../services/room-service';
 })
 export class RoomPage implements OnInit {
   boxForm!: FormGroup;
-  editingIndex: number | null = null;
   private http = inject(HttpClient);
 
   constructor(private fb: FormBuilder, private roomService: RoomService) {}
