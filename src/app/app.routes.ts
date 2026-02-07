@@ -9,7 +9,7 @@ export const routes: Routes = [
   {
     path: 'room',
     loadComponent: () =>
-      import('./admin/room/room').then(m => m.Room)
+      import('./admin/room/room').then(m => m.RoomPage)
   },
   {
     path: '',

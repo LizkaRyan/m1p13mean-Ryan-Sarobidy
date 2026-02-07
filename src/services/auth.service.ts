@@ -1,6 +1,7 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
+import { environment } from '../app/environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -20,14 +21,28 @@ export class AuthService {
 
   setRole(role: string) {
     if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('role', role);
+      localStorage.setItem(environment.roleKey, role);
     }
     this.roleSubject.next(role);
   }
 
+  setToken(token: string) {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem(environment.tokenKey, token);
+    }
+  }
+
+  getToken(): string | null {
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem(environment.tokenKey);
+    }
+    return null;
+  }
+
   logout() {
     if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem('role');
+      localStorage.removeItem(environment.roleKey);
+      localStorage.removeItem(environment.tokenKey);
     }
     this.roleSubject.next(null);
   }
