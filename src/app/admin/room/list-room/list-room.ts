@@ -1,6 +1,6 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { Room } from '../../../../types/api';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, FormsModule } from '@angular/forms';
 import {
   lucideBox,
   lucidePlus,
@@ -15,7 +15,7 @@ import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-list-room',
-  imports: [CommonModule, NgIconComponent],
+  imports: [CommonModule, NgIconComponent, FormsModule],
   templateUrl: './list-room.html',
   styleUrl: './list-room.css',
   providers: [provideIcons({ maximize: lucideMaximize, plus: lucidePlus, edit: lucideEdit2, box: lucideBox })]
@@ -23,7 +23,9 @@ import { environment } from '../../../environments/environment';
 export class ListRoom implements OnInit {
   @Input() boxForm!: FormGroup;
   @Input() editingIndex: number | null = null;
+  searchTerm: string = '';
   boxes: Room[] = [];
+  filteredBoxes: Room[] = [];
   private http = inject(HttpClient);
 
   ngOnInit(): void {
@@ -34,10 +36,27 @@ export class ListRoom implements OnInit {
     return this.http.get<Room[]>(`${environment.baseUrl}/rooms`);
   }
 
+  onSearchChange(searchValue: string): void {
+    this.searchTerm = searchValue;
+    this.filterBoxes();
+  }
+
+  filterBoxes(): void {
+    if (!this.searchTerm.trim()) {
+      this.filteredBoxes = [...this.boxes];
+    } else {
+      const searchLower = this.searchTerm.toLowerCase().trim();
+      this.filteredBoxes = this.boxes.filter(box =>
+        box.name.toLowerCase().includes(searchLower)
+      );
+    }
+  }
+
   loadSampleData(): void {
     this.getRoom().subscribe({
       next: (rooms: Room[]) => {
         this.boxes = rooms; // Angular détecte correctement le changement
+        this.filteredBoxes = this.boxes; // Initialiser filteredBoxes avec tous les boxes
       },
       error: (err) => console.error('Error loading rooms:', err)
     });

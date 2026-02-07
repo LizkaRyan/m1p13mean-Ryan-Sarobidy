@@ -1,23 +1,13 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Room } from '../../../types/api';
 import { CommonModule } from '@angular/common';
-import { 
-  lucideBox,
-  lucidePlus,
-  lucideEdit2,
-  lucideTrash2,
-  lucideMaximize
-} from '@ng-icons/lucide';
-import { provideIcons, NgIconComponent } from '@ng-icons/core';
 import { InsertionRoom } from './insertion/insertion-room';
 import { ListRoom } from './list-room/list-room';
 
 @Component({
   selector: 'app-room',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgIconComponent, InsertionRoom, ListRoom],
-  providers: [provideIcons({ maximize: lucideMaximize, plus: lucidePlus, edit: lucideEdit2, delete: lucideTrash2, box: lucideBox })],
+  imports: [CommonModule, ReactiveFormsModule, InsertionRoom, ListRoom],
   templateUrl: './room.html',
   styleUrl: './room.css',
 })
