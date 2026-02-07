@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, OnChanges, Input, SimpleChanges, OnInit } from '@angular/core';
 import { Room } from '../../../../types/api';
 import { FormGroup, FormsModule } from '@angular/forms';
 import {
@@ -9,9 +9,8 @@ import {
 } from '@ng-icons/lucide';
 import { provideIcons, NgIconComponent } from '@ng-icons/core';
 import { CommonModule } from '@angular/common';
+import { RoomService } from '../../../services/room-service';
 import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-list-room',
@@ -24,46 +23,21 @@ export class ListRoom implements OnInit {
   @Input() boxForm!: FormGroup;
   @Input() editingIndex: number | null = null;
   searchTerm: string = '';
-  boxes: Room[] = [];
-  filteredBoxes: Room[] = [];
-  private http = inject(HttpClient);
+  filteredBoxes$:Observable<Room[]>;
+
+  constructor(private roomService: RoomService) { }
 
   ngOnInit(): void {
-    this.loadSampleData();
+    this.filteredBoxes$ = this.roomService.filteredBoxes$;
   }
 
-  getRoom(): Observable<Room[]> {
-    return this.http.get<Room[]>(`${environment.baseUrl}/rooms`);
-  }
 
   onSearchChange(searchValue: string): void {
     this.searchTerm = searchValue;
-    this.filterBoxes();
-  }
-
-  filterBoxes(): void {
-    if (!this.searchTerm.trim()) {
-      this.filteredBoxes = [...this.boxes];
-    } else {
-      const searchLower = this.searchTerm.toLowerCase().trim();
-      this.filteredBoxes = this.boxes.filter(box =>
-        box.name.toLowerCase().includes(searchLower)
-      );
-    }
-  }
-
-  loadSampleData(): void {
-    this.getRoom().subscribe({
-      next: (rooms: Room[]) => {
-        this.boxes = rooms; // Angular détecte correctement le changement
-        this.filteredBoxes = this.boxes; // Initialiser filteredBoxes avec tous les boxes
-      },
-      error: (err) => console.error('Error loading rooms:', err)
-    });
   }
 
   editBox(index: number): void {
-    const box = this.boxes[index];
+    const box = this.roomService.boxes$[index];
     this.editingIndex = index;
 
     this.boxForm.patchValue({
@@ -80,7 +54,7 @@ export class ListRoom implements OnInit {
 
   deleteBox(index: number): void {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce box ?')) {
-      this.boxes.splice(index, 1);
+      //this.roomService.boxes$.splice(index, 1);
       if (this.editingIndex === index) {
         this.cancelEdit();
       }
