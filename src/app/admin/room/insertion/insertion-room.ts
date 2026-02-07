@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, Input } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Room } from '../../../../types/api';
 import { 
   lucideBox,
@@ -18,14 +18,10 @@ import { CommonModule } from '@angular/common';
   providers: [provideIcons({ maximize: lucideMaximize, plus: lucidePlus, edit: lucideEdit2, box: lucideBox })]
 })
 export class InsertionRoom {
-  boxForm!: FormGroup;
-  editingIndex: number | null = null;
+  @Input() boxForm!: FormGroup;
+  @Input() editingIndex: number | null = null;
 
   constructor(private fb: FormBuilder) { }
-  
-  ngOnInit(): void {
-    this.initForm();
-  }
 
   statusOptions = [
     { code: 'AVAILABLE', label: 'Disponible' },
@@ -33,19 +29,6 @@ export class InsertionRoom {
     { code: 'MAINTENANCE', label: 'Maintenance' },
     { code: 'RESERVED', label: 'Réservé' }
   ];
-
-  initForm(): void {
-    this.boxForm = this.fb.group({
-      name: ['', Validators.required],
-      rentPrice: [0, [Validators.required, Validators.min(0)]],
-      statusCode: ['AVAILABLE', Validators.required],
-      floor: [1, [Validators.required, Validators.min(0)]],
-      capacity: [1, [Validators.required, Validators.min(1)]],
-      length: [0, [Validators.required, Validators.min(0)]],
-      height: [0, [Validators.required, Validators.min(0)]],
-      width: [0, [Validators.required, Validators.min(0)]]
-    });
-  }
 
   onSubmit(): void {
     if (this.boxForm.valid) {
