@@ -19,12 +19,13 @@ export class Login {
   password: string = '';
   private http = inject(HttpClient);
 
-  constructor(private router: Router,private authService: AuthService) { }
+  constructor(private router: Router, private authService: AuthService) { }
 
   onLogin(): void {
     const loginResponse = this.login({ email: this.email, password: this.password }).subscribe({
       next: (res) => {
         this.authService.setRole(res.user.role);
+        this.authService.setToken(res.token);
         if (res.user.role.toLocaleLowerCase() === "admin") {
           this.router.navigate(['/room']);
           return;
@@ -37,7 +38,6 @@ export class Login {
       }
     });
     console.log('Login response:', loginResponse);
-    // Navigation vers le dashboard ou traitement de la connexion
 
   }
 
