@@ -104,6 +104,7 @@ export class InsertionRoom implements OnInit {
           },
           error: (err) => console.error('Error loading rooms:', err)
         });
+        this.cancelEdit();
       }
 
       this.boxForm.reset({

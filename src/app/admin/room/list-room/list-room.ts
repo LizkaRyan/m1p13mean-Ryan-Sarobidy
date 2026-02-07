@@ -1,4 +1,4 @@
-import { Component, OnChanges, Input, SimpleChanges, OnInit } from '@angular/core';
+import { Component, OnChanges, Input, SimpleChanges, OnInit, inject } from '@angular/core';
 import { Room } from '../../../../types/api';
 import { FormGroup, FormsModule } from '@angular/forms';
 import {
@@ -11,6 +11,8 @@ import { provideIcons, NgIconComponent } from '@ng-icons/core';
 import { CommonModule } from '@angular/common';
 import { RoomService } from '../../../services/room-service';
 import { firstValueFrom, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-list-room',
@@ -24,7 +26,7 @@ export class ListRoom implements OnInit {
   searchTerm: string = '';
   filteredBoxes$: Observable<Room[]>;
   editingIndex: string | null = null;
-
+  private http = inject(HttpClient);
 
   constructor(private roomService: RoomService) { }
 
@@ -58,9 +60,19 @@ export class ListRoom implements OnInit {
     this.roomService.setEditingIndex(id);
   }
 
+  patchBox(id:string): Observable<Room[]> {
+    return this.http.patch<Room[]>(`${environment.baseUrl}/rooms/${id}`, { deletedAt: new Date() });
+  }
+
   deleteBox(id: string): void {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce box ?')) {
       //this.roomService.boxes$.splice(index, 1);
+      this.patchBox(id).subscribe({
+        next: (rooms: Room[]) => {
+          this.roomService.setBoxes(rooms); // Angular détecte correctement le changement
+        },
+        error: (err) => console.error('Error loading rooms:', err)
+      });
       if (this.editingIndex === id) {
         this.boxForm.reset({
           statusCode: 'AVAILABLE',
@@ -71,6 +83,7 @@ export class ListRoom implements OnInit {
           height: 0,
           width: 0
         });
+        this.roomService.setEditingIndex(null);
       }
     }
   }
