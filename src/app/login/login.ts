@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { LoginResponse } from '../../types/api';
 import { environment } from '../environments/environment';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -18,11 +19,12 @@ export class Login {
   password: string = '';
   private http = inject(HttpClient);
 
-  constructor(private router: Router) { }
+  constructor(private router: Router,private authService: AuthService) { }
 
   onLogin(): void {
     const loginResponse = this.login({ email: this.email, password: this.password }).subscribe({
       next: (res) => {
+        this.authService.setRole(res.user.role);
         if (res.user.role.toLocaleLowerCase() === "admin") {
           this.router.navigate(['/room']);
           return;
@@ -43,8 +45,6 @@ export class Login {
     return new Observable(observer => {
       this.http.post(`${environment.baseUrl}/auth/login`, { email, password }).subscribe({
         next: (res: LoginResponse) => {
-          localStorage.setItem(environment.tokenKey, res.token);
-          localStorage.setItem(environment.roleKey, res.user.role);
           observer.next(res);
           observer.complete();
         },

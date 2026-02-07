@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,6 +11,23 @@ import { CommonModule } from '@angular/common';
 })
 export class Navbar {
   isMenuOpen = false;
+  role: string | null = null;
+  menuItems: any[] = [];
+
+  constructor(private authService: AuthService) {
+    this.authService.role$.subscribe(role => {
+      this.role = role;
+      if (this.role && this.role.toLocaleLowerCase() === 'admin') {
+        this.menuItems = this.navbarItems['admin'];
+        return;
+      }
+      if (this.role && this.role.toLocaleLowerCase() === 'boutique') {
+        this.menuItems = this.navbarItems['boutique'];
+        return;
+      }
+      this.menuItems = this.navbarItems['client'];
+    });
+  }
 
   private navbarItems = {
     admin: [
@@ -26,7 +44,8 @@ export class Navbar {
       { label: 'Accueil', route: '/' },
     ]
   };
-  
+
+
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
   }
