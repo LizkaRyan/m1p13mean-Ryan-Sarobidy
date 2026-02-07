@@ -10,11 +10,12 @@ import {
   lucideMaximize
 } from '@ng-icons/lucide';
 import { provideIcons, NgIconComponent } from '@ng-icons/core';
+import { InsertionRoom } from './insertion/insertion-room';
 
 @Component({
   selector: 'app-room',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgIconComponent],
+  imports: [CommonModule, ReactiveFormsModule, NgIconComponent, InsertionRoom],
   providers: [provideIcons({ maximize: lucideMaximize, plus: lucidePlus, edit: lucideEdit2, delete: lucideTrash2, box: lucideBox })],
   templateUrl: './room.html',
   styleUrl: './room.css',
@@ -24,31 +25,8 @@ export class RoomPage implements OnInit {
   boxes: Room[] = [];
   editingIndex: number | null = null;
 
-  statusOptions = [
-    { code: 'AVAILABLE', label: 'Disponible' },
-    { code: 'RENTED', label: 'Loué' },
-    { code: 'MAINTENANCE', label: 'Maintenance' },
-    { code: 'RESERVED', label: 'Réservé' }
-  ];
-
-  constructor(private fb: FormBuilder) {}
-
   ngOnInit(): void {
-    this.initForm();
     this.loadSampleData();
-  }
-
-  initForm(): void {
-    this.boxForm = this.fb.group({
-      name: ['', Validators.required],
-      rentPrice: [0, [Validators.required, Validators.min(0)]],
-      statusCode: ['AVAILABLE', Validators.required],
-      floor: [1, [Validators.required, Validators.min(0)]],
-      capacity: [1, [Validators.required, Validators.min(1)]],
-      length: [0, [Validators.required, Validators.min(0)]],
-      height: [0, [Validators.required, Validators.min(0)]],
-      width: [0, [Validators.required, Validators.min(0)]]
-    });
   }
 
   loadSampleData(): void {
@@ -99,50 +77,6 @@ export class RoomPage implements OnInit {
         dimensions: { length: 4, height: 2.5, width: 4, area: 16 }
       }
     ];
-  }
-
-  onSubmit(): void {
-    if (this.boxForm.valid) {
-      const formValue = this.boxForm.value;
-      const area = formValue.length * formValue.width;
-      
-      const selectedStatus = this.statusOptions.find(s => s.code === formValue.statusCode);
-      
-      const box: Room = {
-        _id: "0",
-        name: formValue.name,
-        rentPrice: formValue.rentPrice,
-        status: {
-          code: selectedStatus!.code,
-          label: selectedStatus!.label
-        },
-        floor: formValue.floor,
-        capacity: formValue.capacity,
-        dimensions: {
-          length: formValue.length,
-          height: formValue.height,
-          width: formValue.width,
-          area: area
-        }
-      };
-
-      if (this.editingIndex !== null) {
-        this.boxes[this.editingIndex] = box;
-        this.editingIndex = null;
-      } else {
-        this.boxes.push(box);
-      }
-
-      this.boxForm.reset({
-        statusCode: 'AVAILABLE',
-        floor: 1,
-        capacity: 1,
-        rentPrice: 0,
-        length: 0,
-        height: 0,
-        width: 0
-      });
-    }
   }
 
   editBox(index: number): void {
