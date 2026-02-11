@@ -42,21 +42,10 @@
     <!-- Menu mobile -->
     <div *ngIf="isMenuOpen" class="md:hidden border-t border-gray-200">
         <div class="px-2 pt-2 pb-3 space-y-1">
-            <a href="#" (click)="closeMenu()"
+            <a *ngFor="let item of menuItems"
+                [routerLink]="item.route" (click)="closeMenu()"
                 class="block text-gray-700 hover:text-indigo-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium transition-colors">
-                Accueil
-            </a>
-            <a href="#" (click)="closeMenu()"
-                class="block text-gray-700 hover:text-indigo-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium transition-colors">
-                Services
-            </a>
-            <a href="#" (click)="closeMenu()"
-                class="block text-gray-700 hover:text-indigo-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium transition-colors">
-                À propos
-            </a>
-            <a href="#" (click)="closeMenu()"
-                class="block text-gray-700 hover:text-indigo-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium transition-colors">
-                Contact
+                {{ item.label }}
             </a>
         </div>
     </div>

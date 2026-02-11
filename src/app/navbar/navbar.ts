@@ -31,10 +31,8 @@ export class Navbar {
 
   private navbarItems = {
     admin: [
-      { label: 'Accueil', route: '/' },
-      { label: 'Services', route: '/services' },
-      { label: 'À propos', route: '/about' },
-      { label: 'Contact', route: '/contact' },
+      { label: 'Room', route: '/admin/room' },
+      { label: 'Validation de réservation', route: '/admin/reservation-validation' },
     ],
     boutique: [
       { label: 'Accueil', route: '/' },

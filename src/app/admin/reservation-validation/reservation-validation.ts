@@ -67,8 +67,8 @@ export class ReservationValidation implements OnInit {
   reservations$!: Observable<ReservationRequest[]>;
   processingId: string | null = null;
 
-  constructor(private http: HttpClient) {}
-  
+  constructor(private http: HttpClient) { }
+
   ngOnInit(): void {
     this.reservations$ = this.getReservation();
   }
@@ -77,14 +77,22 @@ export class ReservationValidation implements OnInit {
     return this.http.get<ReservationRequest[]>(`${environment.baseUrl}/requests-reservation`);
   }
 
+  patchReservation(id: string, validated: boolean): Observable<ReservationRequest[]> {
+    return this.http.patch<ReservationRequest[]>(`${environment.baseUrl}/requests-reservation/${id}`, { validated });
+  }
+
   approveReservation(reservationId: string): void {
     this.processingId = reservationId;
-
+    if (confirm('Êtes-vous sûr de refuser cette demande ?')) {
+      this.reservations$ = this.patchReservation(reservationId, true);
+    }
   }
 
   rejectReservation(reservationId: string): void {
     this.processingId = reservationId;
-
+    if (confirm('Êtes-vous sûr de refuser cette demande ?')) {
+      this.reservations$ = this.patchReservation(reservationId, false);
+    }
   }
 
   calculateDuration(startDate: string, endDate: string): number {
