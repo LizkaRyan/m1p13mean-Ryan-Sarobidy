@@ -12,7 +12,7 @@ export class AuthService {
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
 
     if (isPlatformBrowser(this.platformId)) {
-      const savedRole = localStorage.getItem('role');
+      const savedRole = localStorage.getItem(environment.roleKey);
       if (savedRole) {
         this.roleSubject.next(savedRole);
       }

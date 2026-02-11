@@ -27,7 +27,7 @@ export class Login {
         this.authService.setRole(res.user.role);
         this.authService.setToken(res.token);
         if (res.user.role.toLocaleLowerCase() === "admin") {
-          this.router.navigate(['/room']);
+          this.router.navigate(['/admin/room']);
           return;
         }
         if (res.user.role.toLocaleLowerCase() === "boutique") {

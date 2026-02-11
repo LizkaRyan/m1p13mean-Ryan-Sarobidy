@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './navbar.html',
   styleUrls: ['./navbar.css']
 })
@@ -31,10 +32,8 @@ export class Navbar {
 
   private navbarItems = {
     admin: [
-      { label: 'Accueil', route: '/' },
-      { label: 'Services', route: '/services' },
-      { label: 'À propos', route: '/about' },
-      { label: 'Contact', route: '/contact' },
+      { label: 'Room', route: '/admin/room' },
+      { label: 'Validation de réservation', route: '/admin/reservation-validation' },
     ],
     boutique: [
       { label: 'Accueil', route: '/' },
