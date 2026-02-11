@@ -22,7 +22,7 @@
       <div class="grid grid-cols-3 gap-4 mt-6">
         <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-xl p-4 hover:shadow-lg transition-all">
           <div class="text-amber-700 text-sm font-bold tracking-wider mb-1">Demandes de réservation</div>
-          <div class="text-3xl font-black text-amber-600">{{ getPendingReservations().length }}</div>
+          <div class="text-3xl font-black text-amber-600">{{ (reservations$ | async)?.length }}</div>
         </div>
       </div>
     </div>
@@ -30,14 +30,14 @@
 
   <div class="container mx-auto px-4 py-8">
     <!-- Section En Attente -->
-    <div *ngIf="getPendingReservations().length > 0" class="mb-12">
+    <div *ngIf="(reservations$ | async)?.length > 0" class="mb-12">
       <h2 class="text-2xl font-black text-amber-600 mb-6 flex items-center gap-3">
         <span class="w-2 h-8 bg-gradient-to-b from-amber-500 to-orange-500 rounded-full"></span>
         EN ATTENTE D'APPROBATION
       </h2>
       
       <div class="grid gap-6">
-        <div *ngFor="let reservation of getPendingReservations(); let i = index" 
+        <div *ngFor="let reservation of reservations$ | async; let i = index" 
              class="group relative bg-white border-2 border-amber-200 rounded-3xl overflow-hidden hover:border-amber-400 hover:shadow-2xl transition-all duration-500">
           
           <!-- Effet lumineux au survol -->
@@ -170,7 +170,7 @@
     </div>
 
     <!-- Message si aucune demande -->
-    <div *ngIf="reservations.length === 0" class="text-center py-20">
+    <div *ngIf="(reservations$ | async)?.length === 0" class="text-center py-20">
       <div class="text-8xl mb-6">📋</div>
       <h3 class="text-3xl font-black text-slate-800 mb-3">Aucune demande</h3>
       <p class="text-slate-600 text-lg">Il n'y a aucune demande de réservation pour le moment</p>

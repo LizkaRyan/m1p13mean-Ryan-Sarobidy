@@ -1,9 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   lucideBox,
 } from '@ng-icons/lucide';
 import { provideIcons, NgIconComponent } from '@ng-icons/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 interface Category {
   code: string;
@@ -51,6 +54,7 @@ interface ReservationRequest {
   endingDate: string;
   validated: boolean | null;
 }
+
 @Component({
   selector: 'app-reservation-validation',
   standalone: true,
@@ -60,161 +64,27 @@ interface ReservationRequest {
   providers: [provideIcons({ box: lucideBox })]
 })
 export class ReservationValidation implements OnInit {
-  reservations: ReservationRequest[] = [];
+  reservations$!: Observable<ReservationRequest[]>;
   processingId: string | null = null;
 
+  constructor(private http: HttpClient) {}
+  
   ngOnInit(): void {
-    this.loadReservations();
+    this.reservations$ = this.getReservation();
   }
 
-  loadReservations(): void {
-    // Données d'exemple
-    this.reservations = [
-      {
-        "_id": "698c53fba4c7623a67cb0ce4",
-        "shopId": {
-          "category": {
-            "code": "MODE",
-            "label": "Mode"
-          },
-          "_id": "698c5222a4c7623a67cb0ce3",
-          "name": "Zara",
-          "userId": "698c5124a4c7623a67cb0ce2"
-        },
-        "roomId": {
-          "_id": "6988d13bf45d21d2d1137468",
-          "name": "Box 4",
-          "rentPrice": 132000,
-          "status": {
-            "code": "AVAILABLE",
-            "label": "Disponible",
-            "_id": "6988d13bf45d21d2d1137465"
-          },
-          "floor": 1,
-          "capacity": 25,
-          "dimensions": {
-            "length": 10,
-            "height": 3,
-            "width": 5,
-            "area": 50,
-            "_id": "6988d13bf45d21d2d1137466"
-          },
-          "deletedAt": null,
-          "__v": 0
-        },
-        "beginingDate": "2026-02-16T00:00:00.000Z",
-        "endingDate": "2026-05-15T00:00:00.000Z",
-        "validated": null
-      },
-      {
-        "_id": "698c53fba4c7623a67cb0ce5",
-        "shopId": {
-          "category": {
-            "code": "TECH",
-            "label": "Technologie"
-          },
-          "_id": "698c5222a4c7623a67cb0ce6",
-          "name": "Apple Store",
-          "userId": "698c5124a4c7623a67cb0ce7"
-        },
-        "roomId": {
-          "_id": "6988d13bf45d21d2d1137469",
-          "name": "Box 2",
-          "rentPrice": 98000,
-          "status": {
-            "code": "AVAILABLE",
-            "label": "Disponible",
-            "_id": "6988d13bf45d21d2d1137470"
-          },
-          "floor": 2,
-          "capacity": 15,
-          "dimensions": {
-            "length": 8,
-            "height": 3,
-            "width": 4,
-            "area": 32,
-            "_id": "6988d13bf45d21d2d1137471"
-          },
-          "deletedAt": null,
-          "__v": 0
-        },
-        "beginingDate": "2026-03-01T00:00:00.000Z",
-        "endingDate": "2026-06-30T00:00:00.000Z",
-        "validated": null
-      },
-      {
-        "_id": "698c53fba4c7623a67cb0ce8",
-        "shopId": {
-          "category": {
-            "code": "FOOD",
-            "label": "Alimentation"
-          },
-          "_id": "698c5222a4c7623a67cb0ce9",
-          "name": "Carrefour Express",
-          "userId": "698c5124a4c7623a67cb0ce10"
-        },
-        "roomId": {
-          "_id": "6988d13bf45d21d2d1137472",
-          "name": "Box 1",
-          "rentPrice": 156000,
-          "status": {
-            "code": "AVAILABLE",
-            "label": "Disponible",
-            "_id": "6988d13bf45d21d2d1137473"
-          },
-          "floor": 1,
-          "capacity": 30,
-          "dimensions": {
-            "length": 12,
-            "height": 3.5,
-            "width": 6,
-            "area": 72,
-            "_id": "6988d13bf45d21d2d1137474"
-          },
-          "deletedAt": null,
-          "__v": 0
-        },
-        "beginingDate": "2026-02-20T00:00:00.000Z",
-        "endingDate": "2026-08-20T00:00:00.000Z",
-        "validated": null
-      }
-    ];
+  getReservation(): Observable<ReservationRequest[]> {
+    return this.http.get<ReservationRequest[]>(`${environment.baseUrl}/requests-reservation`);
   }
 
   approveReservation(reservationId: string): void {
     this.processingId = reservationId;
-    
-    setTimeout(() => {
-      const index = this.reservations.findIndex(r => r._id === reservationId);
-      if (index !== -1) {
-        this.reservations[index].validated = true;
-      }
-      this.processingId = null;
-    }, 800);
+
   }
 
   rejectReservation(reservationId: string): void {
     this.processingId = reservationId;
-    
-    setTimeout(() => {
-      const index = this.reservations.findIndex(r => r._id === reservationId);
-      if (index !== -1) {
-        this.reservations[index].validated = false;
-      }
-      this.processingId = null;
-    }, 800);
-  }
 
-  getPendingReservations(): ReservationRequest[] {
-    return this.reservations.filter(r => r.validated === null);
-  }
-
-  getApprovedReservations(): ReservationRequest[] {
-    return this.reservations.filter(r => r.validated === true);
-  }
-
-  getRejectedReservations(): ReservationRequest[] {
-    return this.reservations.filter(r => r.validated === false);
   }
 
   calculateDuration(startDate: string, endDate: string): number {
