@@ -17,6 +17,11 @@ export const routes: Routes = [
       import('./admin/reservation-validation/reservation-validation').then(m => m.ReservationValidation)
   },
   {
+    path: 'admin/event',
+    loadComponent: () =>
+      import('./admin/event/event').then(m => m.Event)
+  },
+  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full'

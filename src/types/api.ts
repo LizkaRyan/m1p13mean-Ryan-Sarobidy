@@ -1,3 +1,5 @@
+import { title } from "process";
+
 export interface User {
     _id: string;
     email: string;
@@ -35,4 +37,15 @@ export interface Dimension {
     height: number;
     width: number;
     area: number;
+}
+
+export interface EventData {
+    _id?: string;
+    title: string;
+    startDate: string;
+    endDate: string;
+    description: string;
+    createdAt: string;
+    themes: string[];
+    color: string;
 }
