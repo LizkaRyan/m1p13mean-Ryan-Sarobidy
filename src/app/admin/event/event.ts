@@ -72,12 +72,20 @@ export class Event implements OnInit {
               allDay: true,
               backgroundColor: event.color,
               color: '#FFFFFF',
+              extendedProps: {
+                description: event.description,
+                themes: event.themes,
+                startDate: event.startDate,
+                endDate: event.endDate,
+                id: event._id
+              }
             }));
             successCallback(lo)
           },
           error: (error) => failureCallback(error)
         });
       },
+      eventClick: this.eventClick.bind(this),
       selectable: true,
       select: this.handleSelect.bind(this),
       datesSet: (info) => {
@@ -94,6 +102,13 @@ export class Event implements OnInit {
               allDay: true,
               backgroundColor: event.color,
               color: '#FFFFFF',
+              extendedProps: {
+                description: event.description,
+                themes: event.themes,
+                startDate: event.startDate,
+                endDate: event.endDate,
+                id: event._id
+              }
             }));
 
             // On supprime les anciens événements et on ajoute les nouveaux
@@ -104,6 +119,22 @@ export class Event implements OnInit {
         });
       }
     };
+  }
+
+  eventClick(info) {
+    const start = info.event.extendedProps.startDate.includes('T') ? info.event.extendedProps.startDate.slice(0, 16) : `${info.event.extendedProps.startDate}T00:00`;
+    const end = info.event.extendedProps.endDate
+      ? (info.event.extendedProps.endDate.includes('T') ? info.event.extendedProps.endDate.slice(0, 16) : `${info.event.extendedProps.endDate}T00:00`)
+      : '';
+    this.boxForm.patchValue({
+      _id: info.event.extendedProps.id,
+      title: info.event.title,
+      startDate: start,
+      endDate: end,
+      description: info.event.extendedProps.description,
+      themes: info.event.extendedProps.themes.join(', '),
+      color: info.event.backgroundColor
+    });
   }
 
   // Méthode appelée lors d'une sélection par glissement
@@ -126,45 +157,59 @@ export class Event implements OnInit {
 
   onSubmit(): void {
     if (this.boxForm.valid) {
+      const themes = this.splitAndFormat(this.boxForm.value.themes);
       const eventData = {
         title: this.boxForm.value.title,
         startDate: this.boxForm.value.startDate,
         endDate: this.boxForm.value.endDate,
         description: this.boxForm.value.description,
-        themes: this.splitAndFormat(this.boxForm.value.themes),
+        themes: themes,
         color: this.boxForm.value.color,
         createdAt: new Date().toISOString()
       }
-      this.postBox(eventData).subscribe({
-        next: (events) => {
-          console.log('Événements mis à jour:', events);
 
-          const calendarApi = this.calendarComponent.getApi();
-
-          calendarApi.removeAllEvents();
-
-          events.forEach((event: any) => {
-            calendarApi.addEvent({
-              title: event.title,
-              start: event.startDate,
-              end: event.endDate,
-              allDay: true,
-              backgroundColor: event.color,
-              textColor: '#FFFFFF'
-            });
-          });
-        },
-        error: (error) => console.error('Erreur lors de la soumission du formulaire:', error)
-      });
-      this.boxForm.reset({
-        title: '',
-        description: '',
-        startDate: '',
-        endDate: '',
-        themes: '',
-        color: '#000000'
-      });
+      if (this.boxForm.value._id) {
+        this.patchEvent(eventData).subscribe({
+          next: (events) => {
+            this.changeEvents(events);
+          },
+          error: (error) => console.error('Erreur lors de la soumission du formulaire:', error)
+        });
+      }
+      else {
+        this.postEvent(eventData).subscribe({
+          next: (events) => {
+            this.changeEvents(events);
+          },
+          error: (error) => console.error('Erreur lors de la soumission du formulaire:', error)
+        });
+      }
+      this.cancel();
     }
+  }
+
+  changeEvents(events: EventData[]): void {
+    const calendarApi = this.calendarComponent.getApi();
+
+    calendarApi.removeAllEvents();
+
+    events.forEach((event: any) => {
+      calendarApi.addEvent({
+        title: event.title,
+        start: event.startDate,
+        end: event.endDate,
+        allDay: true,
+        backgroundColor: event.color,
+        textColor: '#FFFFFF',
+        extendedProps: {
+          description: event.description,
+          themes: event.themes,
+          startDate: event.startDate,
+          endDate: event.endDate,
+          id: event._id
+        }
+      });
+    });
   }
 
   splitAndFormat(str) {
@@ -175,12 +220,29 @@ export class Event implements OnInit {
       .map(s => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase());
   }
 
-  postBox(event: EventData): Observable<EventData[]> {
+  postEvent(event: EventData): Observable<EventData[]> {
     return this.http.post<EventData[]>(`${environment.baseUrl}/events`, event);
+  }
+
+  patchEvent(event: any): Observable<EventData[]> {
+    return this.http.patch<EventData[]>(`${environment.baseUrl}/events/${this.boxForm.value._id}`, event);
+  }
+
+  cancel(): void {
+    this.boxForm.reset({
+      title: '',
+      description: '',
+      startDate: '',
+      endDate: '',
+      themes: '',
+      color: '#000000',
+      _id: null
+    });
   }
 
   initForm(): void {
     this.boxForm = this.fb.group({
+      _id: [null],
       title: ['Halloween Party', Validators.required],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],

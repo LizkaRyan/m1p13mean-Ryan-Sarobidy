@@ -40,6 +40,7 @@ export interface Dimension {
 }
 
 export interface EventData {
+    _id?: string;
     title: string;
     startDate: string;
     endDate: string;
