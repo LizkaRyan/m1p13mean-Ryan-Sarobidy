@@ -1,14 +1,89 @@
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-    <div class="container mx-auto px-4 py-8">
+    <div class="container m-auto px-4 py-8">
         <div class="mb-10">
             <h1
                 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 mb-2">
-                Gestion des événements
+                Gestion des salles
             </h1>
         </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-5 bg-white">
+                <div class="bg-gradient-to-r rounded-t-2xl from-indigo-600 to-purple-600 px-8 py-6">
+                    <h2 class="text-2xl flex gap-2 font-bold text-white">
+                        <div class="flex items-center">
+                            <ng-icon name="plus" size="24"></ng-icon>
+                        </div>
+                        Nouveau évènement
+                    </h2>
+                </div>
+                <form [formGroup]="boxForm" (ngSubmit)="onSubmit()" class="p-6 space-y-4">
+                    <!-- Nom de l'événement -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Nom de l'événement</label>
+                        <input type="text" formControlName="name"
+                            class="w-full px-4 py-2 border-2 border-slate-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none"
+                            placeholder="Ex: Halloween Party">
+                        <div *ngIf="boxForm.get('name')?.invalid && boxForm.get('name')?.touched"
+                            class="text-red-500 text-sm mt-1">
+                            Le nom est requis
+                        </div>
+                    </div>
 
-        <div class="px-3 py-3 bg-white rounded-xl shadow-md">
-            <full-calendar [options]="calendarOptions"></full-calendar>
+                    <!-- Dates -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Date de début</label>
+                            <input type="date" formControlName="startDate"
+                                class="w-full px-4 py-2 border-2 border-slate-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Date de fin</label>
+                            <input type="date" formControlName="endDate"
+                                class="w-full px-4 py-2 border-2 border-slate-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none">
+                        </div>
+                    </div>
+
+                    <!-- Thèmes -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Thèmes</label>
+                        <input type="text" formControlName="themes"
+                            class="w-full px-4 py-2 border-2 border-slate-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none"
+                            placeholder="Ex: Horreur, Vêtements, friandises">
+                        <div *ngIf="boxForm.get('themes')?.invalid && boxForm.get('themes')?.touched"
+                            class="text-red-500 text-sm mt-1">
+                            Les thèmes sont requis
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Description</label>
+                        <textarea formControlName="description" rows="3"
+                            class="w-full px-4 py-2 border-2 border-slate-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none"
+                            placeholder="Description détaillée..."></textarea>
+                        <div *ngIf="boxForm.get('description')?.invalid && boxForm.get('description')?.touched"
+                            class="text-red-500 text-sm mt-1">
+                            La description est requise
+                        </div>
+                    </div>
+
+                    <!-- Boutons -->
+                    <div class="flex gap-3 pt-4">
+                        <button type="submit" [disabled]="boxForm.invalid"
+                            class="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md">
+                            Ajouter
+                        </button>
+                        <button type="button"
+                            class="px-4 py-2 border-2 border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-all">
+                            Annuler
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="lg:col-span-7 p-3 bg-white">
+                <full-calendar *ngIf="calendarOptions" [options]="calendarOptions"></full-calendar>
+            </div>
         </div>
     </div>
 </div>
