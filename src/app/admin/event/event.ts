@@ -11,6 +11,8 @@ import {
   lucideEdit2,
 } from '@ng-icons/lucide';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import frLocale from '@fullcalendar/core/locales/fr';
+import timeGridPlugin from '@fullcalendar/timegrid';
 
 @Component({
   selector: 'app-event',
@@ -18,7 +20,8 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
   imports: [CommonModule, ReactiveFormsModule, FullCalendarModule, NgIconComponent],
   templateUrl: './event.html',
   styleUrls: ['./event.css'],
-  providers: [provideIcons({ plus: lucidePlus, edit: lucideEdit2 })]
+  providers: [provideIcons({ plus: lucidePlus, edit: lucideEdit2 })],
+
 })
 export class Event implements OnInit {
   boxForm!: FormGroup;
@@ -41,27 +44,33 @@ export class Event implements OnInit {
   initCalendar(): void {
     this.calendarOptions = {
       height: 500,
+      locale: frLocale,
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
       contentHeight: 400,
       aspectRatio: 1.5,
-      plugins: [dayGridPlugin, interactionPlugin],
+      plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin],
       initialView: 'dayGridMonth',
       events: [
         { title: 'Test Event', start: '2026-02-10T10:00:00', end: '2026-02-12' },
         { title: 'Meeting', date: '2026-02-18' }
       ],
       selectable: true,
-      // Utilisation de dateClick pour ouvrir le formulaire au clic simple
-      //dateClick: this.handleDateClick.bind(this),
-      // Si vous préférez la sélection par glissement, gardez select ci-dessous
-      select: this.handleSelect.bind(this)
+      select: this.handleSelect.bind(this),
     };
   }
 
   // Méthode appelée lors d'une sélection par glissement
   handleSelect(info: any): void {
+    const start = info.startStr.slice(0, 16); // "YYYY-MM-DDTHH:mm"
+    const end = info.endStr ? info.endStr.slice(0, 16) : '';
+
     this.boxForm.patchValue({
-      startDate: info.startStr.split('T')[0], // on ne garde que la partie date
-      endDate: info.endStr ? info.endStr.split('T')[0] : null
+      startDate: start,
+      endDate: end
     });
   }
 

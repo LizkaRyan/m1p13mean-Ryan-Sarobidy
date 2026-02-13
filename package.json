@@ -36,6 +36,7 @@
     "@fullcalendar/core": "^6.1.20",
     "@fullcalendar/daygrid": "^6.1.20",
     "@fullcalendar/interaction": "^6.1.20",
+    "@fullcalendar/timegrid": "^6.1.20",
     "@ng-icons/core": "^33.0.0",
     "@ng-icons/lucide": "^33.0.0",
     "express": "^5.1.0",
