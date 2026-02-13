@@ -2,10 +2,11 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   lucideBox,
+  lucideMailbox
 } from '@ng-icons/lucide';
 import { provideIcons, NgIconComponent } from '@ng-icons/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { empty, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 interface Category {
@@ -61,7 +62,7 @@ interface ReservationRequest {
   imports: [CommonModule, NgIconComponent],
   templateUrl: './reservation-validation.html',
   styleUrl: './reservation-validation.css',
-  providers: [provideIcons({ box: lucideBox })]
+  providers: [provideIcons({ box: lucideBox, empty: lucideMailbox })]
 })
 export class ReservationValidation implements OnInit {
   reservations$!: Observable<ReservationRequest[]>;

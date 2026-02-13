@@ -5,12 +5,13 @@ import {
   lucideBox,
   lucidePlus,
   lucideEdit2,
-  lucideMaximize
+  lucideMaximize,
+  lucideMailbox
 } from '@ng-icons/lucide';
 import { provideIcons, NgIconComponent } from '@ng-icons/core';
 import { CommonModule } from '@angular/common';
-import { RoomService } from '../../../services/room-service';
-import { firstValueFrom, Observable } from 'rxjs';
+import { RoomService } from '../../../../services/room-service';
+import { empty, firstValueFrom, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
@@ -19,7 +20,7 @@ import { environment } from '../../../environments/environment';
   imports: [CommonModule, NgIconComponent, FormsModule],
   templateUrl: './list-room.html',
   styleUrl: './list-room.css',
-  providers: [provideIcons({ maximize: lucideMaximize, plus: lucidePlus, edit: lucideEdit2, box: lucideBox })]
+  providers: [provideIcons({ maximize: lucideMaximize, plus: lucidePlus, edit: lucideEdit2, box: lucideBox, empty: lucideMailbox })]
 })
 export class ListRoom implements OnInit {
   @Input() boxForm!: FormGroup;

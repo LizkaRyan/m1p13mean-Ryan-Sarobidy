@@ -13,7 +13,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { error } from 'console';
-import { RoomService } from '../../../services/room-service';
+import { RoomService } from '../../../../services/room-service';
 
 @Component({
   selector: 'app-insertion-room',
@@ -35,13 +35,6 @@ export class InsertionRoom implements OnInit {
     });
   }
 
-  statusOptions = [
-    { code: 'AVAILABLE', label: 'Disponible' },
-    { code: 'RENTED', label: 'Loué' },
-    { code: 'MAINTENANCE', label: 'Maintenance' },
-    { code: 'RESERVED', label: 'Réservé' }
-  ];
-
   postBox(box: Room): Observable<Room[]> {
     return this.http.post<Room[]>(`${environment.baseUrl}/rooms`, box);
   }
@@ -53,7 +46,6 @@ export class InsertionRoom implements OnInit {
   cancelEdit(): void {
     this.roomService.setEditingIndex(null);
     this.boxForm.reset({
-      statusCode: 'AVAILABLE',
       floor: 1,
       capacity: 1,
       rentPrice: 0,
@@ -68,16 +60,11 @@ export class InsertionRoom implements OnInit {
       const formValue = this.boxForm.value;
       const area = formValue.length * formValue.width;
 
-      const selectedStatus = this.statusOptions.find(s => s.code === formValue.statusCode);
-
       const box: Room = {
         _id: null,
         name: formValue.name,
         rentPrice: formValue.rentPrice,
-        status: {
-          code: selectedStatus!.code,
-          label: selectedStatus!.label
-        },
+        status: { code: "AVAILABLE", label: "Disponible" },
         floor: formValue.floor,
         capacity: formValue.capacity,
         dimensions: {
@@ -108,7 +95,6 @@ export class InsertionRoom implements OnInit {
       }
 
       this.boxForm.reset({
-        statusCode: 'AVAILABLE',
         floor: 1,
         capacity: 1,
         rentPrice: 0,

@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
-import { Room } from "../../types/api";
+import { Room } from "../types/api";
 
 @Injectable({ providedIn: 'root' }) // disponible partout
 export class RoomService {

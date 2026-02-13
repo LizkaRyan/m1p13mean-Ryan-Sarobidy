@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 import { Room } from '../../../types/api';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { RoomService } from '../../services/room-service';
+import { RoomService } from '../../../services/room-service';
 
 @Component({
   selector: 'app-room',
