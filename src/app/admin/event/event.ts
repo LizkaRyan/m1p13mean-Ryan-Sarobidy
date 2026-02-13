@@ -17,6 +17,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { EventData } from '../../../types/api';
+import { title } from 'process';
 
 @Component({
   selector: 'app-event',
@@ -30,6 +31,7 @@ import { EventData } from '../../../types/api';
 export class Event implements OnInit {
   boxForm!: FormGroup;
   calendarOptions!: CalendarOptions;
+  @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
   events: EventData[] = [];
   isBrowser = false;
   private http = inject(HttpClient);
@@ -124,18 +126,67 @@ export class Event implements OnInit {
 
   onSubmit(): void {
     if (this.boxForm.valid) {
-      console.log('Formulaire soumis', this.boxForm.value);
-      // Ici, vous pouvez envoyer les données à votre API
+      const eventData = {
+        title: this.boxForm.value.title,
+        startDate: this.boxForm.value.startDate,
+        endDate: this.boxForm.value.endDate,
+        description: this.boxForm.value.description,
+        themes: this.splitAndFormat(this.boxForm.value.themes),
+        color: this.boxForm.value.color,
+        createdAt: new Date().toISOString()
+      }
+      this.postBox(eventData).subscribe({
+        next: (events) => {
+          console.log('Événements mis à jour:', events);
+
+          const calendarApi = this.calendarComponent.getApi();
+
+          calendarApi.removeAllEvents();
+
+          events.forEach((event: any) => {
+            calendarApi.addEvent({
+              title: event.title,
+              start: event.startDate,
+              end: event.endDate,
+              allDay: true,
+              backgroundColor: event.color,
+              textColor: '#FFFFFF'
+            });
+          });
+        },
+        error: (error) => console.error('Erreur lors de la soumission du formulaire:', error)
+      });
+      this.boxForm.reset({
+        title: '',
+        description: '',
+        startDate: '',
+        endDate: '',
+        themes: '',
+        color: '#000000'
+      });
     }
+  }
+
+  splitAndFormat(str) {
+    return str
+      .split(",")                 // séparer par virgule
+      .map(s => s.trim())         // enlever les espaces début/fin
+      .filter(s => s.length > 0)  // enlever les éléments vides
+      .map(s => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase());
+  }
+
+  postBox(event: EventData): Observable<EventData[]> {
+    return this.http.post<EventData[]>(`${environment.baseUrl}/events`, event);
   }
 
   initForm(): void {
     this.boxForm = this.fb.group({
-      name: ['', Validators.required],
+      title: ['Halloween Party', Validators.required],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
-      themes: ['', Validators.required],
-      description: ['', Validators.required]
+      themes: ['Friandises, Costumes', Validators.required],
+      description: ['Faites peur!', Validators.required],
+      color: ['#fa652f', Validators.required]
     });
   }
 }

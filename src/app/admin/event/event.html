@@ -3,7 +3,7 @@
         <div class="mb-10">
             <h1
                 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 mb-2">
-                Gestion des salles
+                Gestion des évènements
             </h1>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -20,10 +20,10 @@
                     <!-- Nom de l'événement -->
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-1">Nom de l'événement</label>
-                        <input type="text" formControlName="name"
+                        <input type="text" formControlName="title"
                             class="w-full px-4 py-2 border-2 border-slate-200 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none"
                             placeholder="Ex: Halloween Party">
-                        <div *ngIf="boxForm.get('name')?.invalid && boxForm.get('name')?.touched"
+                        <div *ngIf="boxForm.get('title')?.invalid && boxForm.get('title')?.touched"
                             class="text-red-500 text-sm mt-1">
                             Le nom est requis
                         </div>
@@ -67,6 +67,15 @@
                         </div>
                     </div>
 
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Couleur de l'événement</label>
+                        <input type="color" formControlName="color" class="w-16 h-10 rounded">
+                        <div *ngIf="boxForm.get('color')?.invalid && boxForm.get('color')?.touched"
+                            class="text-red-500 text-sm mt-1">
+                            La couleur est requise
+                        </div>
+                    </div>
+
                     <!-- Boutons -->
                     <div class="flex gap-3 pt-4">
                         <button type="submit" [disabled]="boxForm.invalid"
@@ -82,7 +91,7 @@
             </div>
 
             <div class="lg:col-span-7 p-3 bg-white">
-                <full-calendar *ngIf="calendarOptions" [options]="calendarOptions"></full-calendar>
+                <full-calendar #calendar *ngIf="calendarOptions" [options]="calendarOptions"></full-calendar>
             </div>
         </div>
     </div>
