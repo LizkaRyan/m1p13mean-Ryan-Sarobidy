@@ -240,6 +240,16 @@ export class Event implements OnInit {
     });
   }
 
+  delete(): void {
+    this.patchEvent({deletedAt: new Date().toISOString()}).subscribe({
+      next: (events) => {
+        this.changeEvents(events);
+      },
+      error: (error) => console.error('Erreur lors de la suppression de l\'événement:', error)
+    })
+    this.cancel();
+  }
+
   initForm(): void {
     this.boxForm = this.fb.group({
       _id: [null],
