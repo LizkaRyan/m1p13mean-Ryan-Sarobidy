@@ -9,7 +9,7 @@ import frLocale from '@fullcalendar/core/locales/fr';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { BehaviorSubject, map, Observable, switchMap } from 'rxjs';
+import { BehaviorSubject, map, Observable, combineLatest } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 @Component({
@@ -27,31 +27,37 @@ export class EventValidation implements OnInit {
   private http = inject(HttpClient);
   searchTerm: string = '';
   searchTerm$ = new BehaviorSubject<string>('');
-  reservations$!: Observable<RequestEvent[]>;
+  reservationsSubject = new BehaviorSubject<RequestEvent[]>([]);
+  reservations$ = this.reservationsSubject.asObservable();
+
   currentYear!: number; // pour stocker l'année déjà chargée
   calendarEvents: any[] = []; // événements déjà récupérés
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object, private fb: FormBuilder) { }
 
   ngOnInit(): void {
-
     this.isBrowser = isPlatformBrowser(this.platformId);
 
     if (this.isBrowser) {
       this.initCalendar();
     }
 
-    this.reservations$ = this.searchTerm$.pipe(
-      switchMap(term =>
-        this.getRequests("REQUEST").pipe(
-          map(reservations =>
-            reservations.filter(r =>
-              r.title.toLowerCase().includes(term.toLowerCase())
-            )
-          )
+    this.reservations$ = combineLatest([
+      this.reservationsSubject,
+      this.searchTerm$
+    ]).pipe(
+      map(([reservations, term]) =>
+        reservations.filter(r =>
+          r.title.toLowerCase().includes(term.toLowerCase())
         )
       )
     );
+
+    // chargement initial
+    this.getRequests("REQUEST").subscribe({
+      next: (requests) => this.reservationsSubject.next(requests),
+      error: (err) => console.error(err)
+    });
   }
 
   viewOnCalendar(startDate: string): void {
@@ -90,6 +96,7 @@ export class EventValidation implements OnInit {
         themes: event.themes,
         startDate: event.startDate,
         endDate: event.endDate,
+        title: event.title,
         id: event._id
       }
     }
@@ -140,19 +147,8 @@ export class EventValidation implements OnInit {
   }
 
   eventClick(info) {
-    const start = info.event.extendedProps.startDate.includes('T') ? info.event.extendedProps.startDate.slice(0, 16) : `${info.event.extendedProps.startDate}T00:00`;
-    const end = info.event.extendedProps.endDate
-      ? (info.event.extendedProps.endDate.includes('T') ? info.event.extendedProps.endDate.slice(0, 16) : `${info.event.extendedProps.endDate}T00:00`)
-      : '';
-    /*this.boxForm.patchValue({
-      _id: info.event.extendedProps.id,
-      title: info.event.title,
-      startDate: start,
-      endDate: end,
-      description: info.event.extendedProps.description,
-      themes: info.event.extendedProps.themes.join(', '),
-      color: info.event.backgroundColor
-    });*/
+    this.searchTerm$.next(info.event.extendedProps.title);
+    this.searchTerm = info.event.extendedProps.title;
   }
 
   getRequestsAndEvent(status, year): Observable<EventAndRequest> {
@@ -163,52 +159,31 @@ export class EventValidation implements OnInit {
     return this.http.get<RequestEvent[]>(`${environment.baseUrl}/requests-event?status=${status}`);
   }
 
-  changeEvents(events: RequestEvent[]): void {
+  changeEvents(events: EventAndRequest): void {
     const calendarApi = this.calendarComponent.getApi();
 
     calendarApi.removeAllEvents();
 
-    events.forEach((event: any) => {
-      calendarApi.addEvent({
-        title: event.title,
-        start: event.startDate,
-        end: event.endDate,
-        allDay: true,
-        backgroundColor: event.color,
-        textColor: '#FFFFFF',
-        extendedProps: {
-          description: event.description,
-          themes: event.themes,
-          startDate: event.startDate,
-          endDate: event.endDate,
-          id: event._id
-        }
-      });
+    events.events.forEach((event: any) => {
+      calendarApi.addEvent(this.turnIntoCalendarEvents(event, '#22C55E'));
+    });
+
+    events.requests.forEach((event: any) => {
+      calendarApi.addEvent(this.turnIntoCalendarEvents(event, '#F59E0B'));
     });
   }
 
-  splitAndFormat(str) {
-    return str
-      .split(",")                 // séparer par virgule
-      .map(s => s.trim())         // enlever les espaces début/fin
-      .filter(s => s.length > 0)  // enlever les éléments vides
-      .map(s => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase());
+  patchEvent(id, object): Observable<EventAndRequest> {
+    return this.http.patch<EventAndRequest>(`${environment.baseUrl}/requests-event/${id}`, object);
   }
 
-  postEvent(event: RequestEvent): Observable<RequestEvent[]> {
-    return this.http.post<RequestEvent[]>(`${environment.baseUrl}/events`, event);
-  }
-
-  patchEvent(event: any): Observable<RequestEvent[]> {
-    return this.http.patch<RequestEvent[]>(`${environment.baseUrl}/events/${event._id}`, event);
-  }
-
-  delete(): void {
-    this.patchEvent({ deletedAt: new Date().toISOString() }).subscribe({
+  validateEvent(id): void {
+    this.patchEvent(id, { status: { code: "APPROVED", label: "Approuvé" } }).subscribe({
       next: (events) => {
         this.changeEvents(events);
+        this.reservationsSubject.next(events.requests);
       },
-      error: (error) => console.error('Erreur lors de la suppression de l\'événement:', error)
-    })
+      error: (error) => console.error('Erreur lors de la validation de l\'événement:', error)
+    });
   }
 }
