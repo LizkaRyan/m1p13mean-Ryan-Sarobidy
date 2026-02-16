@@ -12,6 +12,11 @@ export interface Role {
     label: string;
 }
 
+export interface Shop {
+    _id: string;
+    name: string;
+}
+
 export interface LoginResponse {
     token: string;
     user: { _id: string; role: string };
@@ -48,4 +53,22 @@ export interface EventData {
     createdAt: string;
     themes: string[];
     color: string;
+}
+
+export interface RequestEvent {
+    _id?: string;
+    title: string;
+    startDate: string;
+    endDate: string;
+    description: string;
+    createdAt: string;
+    themes: string[];
+    color: string;
+    shopId: Shop;
+    status: { code: string; label: string, date: string };
+}
+
+export interface EventAndRequest {
+    events: EventData[];
+    requests: RequestEvent[];
 }
