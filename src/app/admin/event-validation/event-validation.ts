@@ -11,13 +11,18 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { BehaviorSubject, map, Observable, combineLatest } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import {
+  lucideMailbox
+} from '@ng-icons/lucide';
 
 @Component({
   selector: 'app-event-validation',
   standalone: true,
-  imports: [CommonModule, FullCalendarModule, FormsModule],
   templateUrl: './event-validation.html',
-  styleUrl: './event-validation.css',
+  styleUrls: ['./event-validation.css'],
+  imports: [CommonModule, FullCalendarModule, FormsModule, NgIconComponent],
+  providers: [provideIcons({ empty: lucideMailbox })]
 })
 export class EventValidation implements OnInit {
   calendarOptions!: CalendarOptions;
@@ -119,28 +124,35 @@ export class EventValidation implements OnInit {
       },
       contentHeight: 400,
       aspectRatio: 1.5,
+      events: [],
       plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin],
       initialView: 'dayGridMonth',
-      events: this.calendarEvents,
       eventClick: this.eventClick.bind(this),
       datesSet: (info) => {
         const newYear = info.start.getFullYear();
-        const current = this.currentYear;
-        if (current !== newYear) {
+
+        if (this.currentYear !== newYear) {
           this.currentYear = newYear;
 
+          // fetch seulement si année différente
           this.getRequestsAndEvent('REQUEST', newYear).subscribe({
             next: (events) => {
-              const lo = events.events.map(event => this.turnIntoCalendarEvents(event, '#22C55E'));
-              lo.push(...events.requests.map(event => this.turnIntoCalendarEvents(event, '#F59E0B')));
+              const lo = events.events.map(e => this.turnIntoCalendarEvents(e, '#22C55E'));
+              lo.push(...events.requests.map(e => this.turnIntoCalendarEvents(e, '#F59E0B')));
 
-              this.calendarEvents = lo; // on met à jour le tableau
+              this.calendarEvents = lo;
+
               const calendarApi = info.view.calendar;
               calendarApi.removeAllEvents();
               lo.forEach(ev => calendarApi.addEvent(ev));
             },
             error: (err) => console.error('Erreur chargement events :', err)
           });
+        } else {
+          // si c'est le même mois / année, juste afficher ce qu'on a déjà
+          const calendarApi = info.view.calendar;
+          calendarApi.removeAllEvents();
+          this.calendarEvents.forEach(ev => calendarApi.addEvent(ev));
         }
       }
     };

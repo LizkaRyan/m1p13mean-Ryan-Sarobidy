@@ -19,7 +19,16 @@
                         placeholder="Rechercher par nom..."
                         class="w-full pl-10 pr-10 py-2.5 border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none bg-white" />
                 </div>
-                <div *ngFor="let reservation of reservations$ | async; let i = index"
+
+                <div *ngIf="reservations$ | async as requests" class="space-y-4">
+                    <div *ngIf="requests.length === 0"
+                        class="bg-white rounded-2xl shadow-lg border border-slate-200 p-12 text-center">
+                        <div class="text-6xl mb-4"><ng-icon name="empty" size="48"></ng-icon></div>
+                        <h3 class="text-xl font-semibold text-slate-700 mb-2">Aucune demande enregistrée</h3>
+                    </div>
+                </div>
+
+                <div *ngFor="let request of reservations$ | async; let i = index"
                     class="lg:col-span-1 w-[-webkit-fill-available]">
                     <div
                         class="group relative bg-white border-2 border-amber-200 rounded-3xl overflow-hidden hover:border-amber-400 hover:shadow-2xl transition-all duration-500">
@@ -38,14 +47,14 @@
                                         <div class="flex items-start justify-between mb-3">
                                             <div class="flex items-center gap-3 mb-2">
                                                 <h3 class="text-3xl font-black text-slate-800">
-                                                    {{ reservation.title }}
+                                                    {{ request.title }}
                                                     <span class="text-lg font-normal text-gray-500">by {{
-                                                        reservation.shopId.name }}</span>
+                                                        request.shopId.name }}</span>
                                                 </h3>
                                             </div>
                                         </div>
                                         <div class="mb-6 flex gap-1">
-                                            <span *ngFor="let theme of reservation.themes"
+                                            <span *ngFor="let theme of request.themes"
                                                 class="px-3 py-1 rounded-full text-xs font-bold border-2 border-gray-600 text-gray-600 bg-gray-100">
                                                 {{ theme }}
                                             </span>
@@ -56,14 +65,17 @@
                                                 <div class="space-y-4">
                                                     <div>
                                                         <div class="text-slate-500 text-xs font-bold mb-1">DÉBUT</div>
-                                                        <div class="text-slate-800 font-bold text-lg">{{ reservation.startDate | date:'dd/MM/yyyy HH:mm':'UTC' }}</div>
+                                                        <div class="text-slate-800 font-bold text-lg">{{
+                                                            request.startDate | date:'dd/MM/yyyy HH:mm':'UTC' }}
+                                                        </div>
                                                     </div>
                                                     <div
                                                         class="h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent">
                                                     </div>
                                                     <div>
                                                         <div class="text-slate-500 text-xs font-bold mb-1">FIN</div>
-                                                        <div class="text-slate-800 font-bold text-lg">{{ reservation.endDate | date:'dd/MM/yyyy HH:mm':'UTC' }}</div>
+                                                        <div class="text-slate-800 font-bold text-lg">{{
+                                                            request.endDate | date:'dd/MM/yyyy HH:mm':'UTC' }}</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -75,13 +87,13 @@
                                                         <div>
                                                             <div class="text-amber-700 font-medium">Durée</div>
                                                             <div class="text-slate-800 font-bold">
-                                                                {{ getTimeBetween(reservation.startDate,
-                                                                reservation.endDate) }}
-                                                                </div>
+                                                                {{ getTimeBetween(request.startDate,
+                                                                request.endDate) }}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <button (click)="viewOnCalendar(reservation.startDate)"
+                                                <button (click)="viewOnCalendar(request.startDate)"
                                                     class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black py-4 px-6 rounded-xl hover:from-indigo-600 hover:to-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                                                     <div class="flex items-center justify-center gap-2">
                                                         Voir sur calendrier
@@ -90,7 +102,7 @@
                                             </div>
                                         </div>
                                         <div class="flex gap-3">
-                                            <button (click)="validateEvent(reservation._id)"
+                                            <button (click)="validateEvent(request._id)"
                                                 class="flex-1 bg-gradient-to-r from-emerald-500 to-green-500 text-white font-black py-4 px-6 rounded-xl hover:from-emerald-600 hover:to-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                                                 <div class="flex items-center justify-center gap-2">
                                                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
@@ -102,7 +114,7 @@
                                                 </div>
                                             </button>
 
-                                            <button (click)="rejectEvent(reservation._id)"
+                                            <button (click)="rejectEvent(request._id)"
                                                 class="flex-1 bg-gradient-to-r from-red-500 to-rose-500 text-white font-black py-4 px-6 rounded-xl hover:from-red-600 hover:to-rose-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                                                 <div class="flex items-center justify-center gap-2">
                                                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"

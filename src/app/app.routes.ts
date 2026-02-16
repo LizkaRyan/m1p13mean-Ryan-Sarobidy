@@ -24,7 +24,8 @@ export const routes: Routes = [
   {
     path: 'admin/event-validation',
     loadComponent: () =>
-      import('./admin/event-validation/event-validation').then(m => m.EventValidation)
+      import('./admin/event-validation/event-validation').then(m => m.EventValidation),
+    runGuardsAndResolvers: 'always'
   },
   {
     path: '',
