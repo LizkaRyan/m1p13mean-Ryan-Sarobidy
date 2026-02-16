@@ -22,6 +22,11 @@ export const routes: Routes = [
       import('./admin/event/event').then(m => m.Event)
   },
   {
+    path: 'admin/event-validation',
+    loadComponent: () =>
+      import('./admin/event-validation/event-validation').then(m => m.EventValidation)
+  },
+  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full'
