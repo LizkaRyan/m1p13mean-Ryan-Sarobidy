@@ -1,5 +1,5 @@
 import { Component, Inject, inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule } from '@angular/forms';
 import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarOptions } from '@fullcalendar/core/index.js';
 import { EventAndRequest, RequestEvent } from '../../../types/api';
@@ -9,13 +9,13 @@ import frLocale from '@fullcalendar/core/locales/fr';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable, switchMap } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-event-validation',
   standalone: true,
-  imports: [CommonModule, FullCalendarModule],
+  imports: [CommonModule, FullCalendarModule, FormsModule],
   templateUrl: './event-validation.html',
   styleUrl: './event-validation.css',
 })
@@ -25,6 +25,11 @@ export class EventValidation implements OnInit {
   events: RequestEvent[] = [];
   isBrowser = false;
   private http = inject(HttpClient);
+  searchTerm: string = '';
+  searchTerm$ = new BehaviorSubject<string>('');
+  reservations$!: Observable<RequestEvent[]>;
+  currentYear!: number; // pour stocker l'année déjà chargée
+  calendarEvents: any[] = []; // événements déjà récupérés
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object, private fb: FormBuilder) { }
 
@@ -35,18 +40,50 @@ export class EventValidation implements OnInit {
     if (this.isBrowser) {
       this.initCalendar();
     }
+
+    this.reservations$ = this.searchTerm$.pipe(
+      switchMap(term =>
+        this.getRequests("REQUEST").pipe(
+          map(reservations =>
+            reservations.filter(r =>
+              r.title.toLowerCase().includes(term.toLowerCase())
+            )
+          )
+        )
+      )
+    );
+  }
+
+  viewOnCalendar(startDate: string): void {
+    const calendarApi = this.calendarComponent.getApi();
+    calendarApi.gotoDate(startDate);
+  }
+
+  getTimeBetween(date1: string | Date, date2: string | Date): string {
+    const d1 = new Date(date1).getTime();
+    const d2 = new Date(date2).getTime();
+
+    const diffMs = Math.abs(d2 - d1); // différence en millisecondes
+
+    const diffDays = diffMs / (1000 * 60 * 60 * 24);
+    if (diffDays >= 1) {
+      return `${Math.ceil(diffDays)} jour${Math.ceil(diffDays) > 1 ? 's' : ''}`;
+    } else {
+      const diffHours = diffMs / (1000 * 60 * 60);
+      return `${Math.ceil(diffHours)} heure${Math.ceil(diffHours) > 1 ? 's' : ''}`;
+    }
   }
 
   turnIntoCalendarEvents(event: any, color: string): any {
     let name = ""
-    if(event.shopId){
+    if (event.shopId) {
       name = " - " + event.shopId.name;
     }
     return {
       title: event.title + name,
       start: event.startDate,
       end: event.endDate,
-      allDay: true,
+      allDay: false,
       backgroundColor: color,
       extendedProps: {
         description: event.description,
@@ -58,9 +95,15 @@ export class EventValidation implements OnInit {
     }
   }
 
+  onSearchChange(value: string) {
+    this.searchTerm$.next(value);
+  }
+
   initCalendar(): void {
     this.calendarOptions = {
       height: 500,
+      timeZone: 'UTC',
+      displayEventTime: false,
       locale: frLocale,
       headerToolbar: {
         left: 'prev,next today',
@@ -71,36 +114,27 @@ export class EventValidation implements OnInit {
       aspectRatio: 1.5,
       plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin],
       initialView: 'dayGridMonth',
-      events: (fetchInfo, successCallback, failureCallback) => {
-        this.getRequestsEvent('REQUEST', fetchInfo.start.getFullYear()).subscribe({
-          next: (events) => {
-            const lo = events.events.map(event => (this.turnIntoCalendarEvents(event, '#22C55E')));
-            
-            lo.push(...events.requests.map(event => (this.turnIntoCalendarEvents(event, '#F59E0B'))));
-            successCallback(lo)
-          },
-          error: (error) => failureCallback(error)
-        });
-      },
+      events: this.calendarEvents,
       eventClick: this.eventClick.bind(this),
       datesSet: (info) => {
         const newYear = info.start.getFullYear();
+        const current = this.currentYear;
+        if (current !== newYear) {
+          this.currentYear = newYear;
 
-        // Recharge les événements pour la nouvelle année
-        const calendarApi = info.view.calendar;
-        this.getRequestsEvent('REQUEST', newYear).subscribe({
-          next: (events) => {
+          this.getRequestsAndEvent('REQUEST', newYear).subscribe({
+            next: (events) => {
+              const lo = events.events.map(event => this.turnIntoCalendarEvents(event, '#22C55E'));
+              lo.push(...events.requests.map(event => this.turnIntoCalendarEvents(event, '#F59E0B')));
 
-            const lo = events.events.map(event => (this.turnIntoCalendarEvents(event, '#22C55E')));
-            
-            lo.push(...events.requests.map(event => (this.turnIntoCalendarEvents(event, '#F59E0B'))));
-
-            // On supprime les anciens événements et on ajoute les nouveaux
-            calendarApi.removeAllEvents();
-            lo.forEach(ev => calendarApi.addEvent(ev));
-          },
-          error: (err) => console.error('Erreur chargement events :', err)
-        });
+              this.calendarEvents = lo; // on met à jour le tableau
+              const calendarApi = info.view.calendar;
+              calendarApi.removeAllEvents();
+              lo.forEach(ev => calendarApi.addEvent(ev));
+            },
+            error: (err) => console.error('Erreur chargement events :', err)
+          });
+        }
       }
     };
   }
@@ -121,8 +155,12 @@ export class EventValidation implements OnInit {
     });*/
   }
 
-  getRequestsEvent(status, year): Observable<EventAndRequest> {
+  getRequestsAndEvent(status, year): Observable<EventAndRequest> {
     return this.http.get<EventAndRequest>(`${environment.baseUrl}/requests-event/with-event?status=${status}&year=${year}`);
+  }
+
+  getRequests(status: string): Observable<RequestEvent[]> {
+    return this.http.get<RequestEvent[]>(`${environment.baseUrl}/requests-event?status=${status}`);
   }
 
   changeEvents(events: RequestEvent[]): void {

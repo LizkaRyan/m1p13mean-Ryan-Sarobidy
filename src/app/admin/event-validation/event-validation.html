@@ -7,8 +7,28 @@
             </h1>
         </div>
         <div class="grid grid-cols-2 gap-8">
-            <div class="flex">
-                <div class="lg:col-span-1 w-[-webkit-fill-available]">
+            <div class="flex flex-col gap-3">
+                <div class="relative mb-4 w-full sm:w-auto sm:min-w-[300px]">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange($event)"
+                        placeholder="Rechercher par nom..."
+                        class="w-full pl-10 pr-10 py-2.5 border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none bg-white" />
+                    <div *ngIf="searchTerm$" (click)="searchTerm$ = ''; onSearchChange('')"
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer">
+                        <svg class="h-5 w-5 text-slate-400 hover:text-slate-600 transition-colors" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </div>
+                </div>
+                <div *ngFor="let reservation of reservations$ | async; let i = index"
+                    class="lg:col-span-1 w-[-webkit-fill-available]">
                     <div
                         class="group relative bg-white border-2 border-amber-200 rounded-3xl overflow-hidden hover:border-amber-400 hover:shadow-2xl transition-all duration-500">
 
@@ -26,19 +46,16 @@
                                         <div class="flex items-start justify-between mb-3">
                                             <div class="flex items-center gap-3 mb-2">
                                                 <h3 class="text-3xl font-black text-slate-800">
-                                                    Black & White
-
+                                                    {{ reservation.title }}
+                                                    <span class="text-lg font-normal text-gray-500">by {{
+                                                        reservation.shopId.name }}</span>
                                                 </h3>
                                             </div>
                                         </div>
                                         <div class="mb-6 flex gap-1">
-                                            <span
+                                            <span *ngFor="let theme of reservation.themes"
                                                 class="px-3 py-1 rounded-full text-xs font-bold border-2 border-gray-600 text-gray-600 bg-gray-100">
-                                                Musique
-                                            </span>
-                                            <span
-                                                class="px-3 py-1 rounded-full text-xs font-bold border-2 border-gray-600 text-gray-600 bg-gray-100">
-                                                Vêtements
+                                                {{ theme }}
                                             </span>
                                         </div>
                                         <div class="flex flex-row gap-8">
@@ -47,28 +64,37 @@
                                                 <div class="space-y-4">
                                                     <div>
                                                         <div class="text-slate-500 text-xs font-bold mb-1">DÉBUT</div>
-                                                        <div class="text-slate-800 font-bold text-lg">10/12/2025</div>
+                                                        <div class="text-slate-800 font-bold text-lg">{{ reservation.startDate | date:'dd/MM/yyyy HH:mm':'UTC' }}</div>
                                                     </div>
                                                     <div
                                                         class="h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent">
                                                     </div>
                                                     <div>
                                                         <div class="text-slate-500 text-xs font-bold mb-1">FIN</div>
-                                                        <div class="text-slate-800 font-bold text-lg">13/04/2026</div>
+                                                        <div class="text-slate-800 font-bold text-lg">{{ reservation.endDate | date:'dd/MM/yyyy HH:mm':'UTC' }}</div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div
-                                                class="bg-gradient-to-br h-fit from-amber-100 to-orange-100 rounded-2xl p-6 border-2 border-amber-300 mb-6">
+                                            <div class="flex flex-col gap-4">
+                                                <div
+                                                    class="bg-gradient-to-br w-[max-content] h-fit from-amber-100 to-orange-100 rounded-2xl p-6 border-2 border-amber-300">
 
-                                                <div class="flex items-center justify-between text-sm">
-                                                    <div>
-                                                        <div class="text-amber-700 font-medium">Durée</div>
-                                                        <div class="text-slate-800 font-bold">
-                                                            15
-                                                            Jours</div>
+                                                    <div class="flex items-center justify-between text-sm">
+                                                        <div>
+                                                            <div class="text-amber-700 font-medium">Durée</div>
+                                                            <div class="text-slate-800 font-bold">
+                                                                {{ getTimeBetween(reservation.startDate,
+                                                                reservation.endDate) }}
+                                                                </div>
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                <button (click)="viewOnCalendar(reservation.startDate)"
+                                                    class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black py-4 px-6 rounded-xl hover:from-indigo-600 hover:to-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                                                    <div class="flex items-center justify-center gap-2">
+                                                        Voir sur calendrier
+                                                    </div>
+                                                </button>
                                             </div>
                                         </div>
                                         <div class="flex gap-3">
@@ -104,7 +130,18 @@
                 </div>
             </div>
 
-            <div class="lg:col-span-1 p-3 bg-white">
+            <div class="lg:col-span-1 p-3 bg-white h-[min-content] sticky top-2">
+                <!-- Légende des événements -->
+                <div class="flex items-center gap-4 mb-3">
+                    <div class="flex items-center gap-1">
+                        <span class="w-4 h-4 rounded-full bg-[#22C55E]"></span>
+                        <span class="text-sm text-gray-700">Évènement en cours</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <span class="w-4 h-4 rounded-full bg-[#F59E0B]"></span>
+                        <span class="text-sm text-gray-700">Requête d'évènement</span>
+                    </div>
+                </div>
                 <full-calendar #calendar *ngIf="calendarOptions" [options]="calendarOptions"></full-calendar>
             </div>
         </div>
