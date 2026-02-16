@@ -122,7 +122,7 @@ export class EventValidation implements OnInit {
   }
 
   getRequestsEvent(status, year): Observable<EventAndRequest> {
-    return this.http.get<EventAndRequest>(`${environment.baseUrl}/requests-event?status=${status}&year=${year}`);
+    return this.http.get<EventAndRequest>(`${environment.baseUrl}/requests-event/with-event?status=${status}&year=${year}`);
   }
 
   changeEvents(events: RequestEvent[]): void {
