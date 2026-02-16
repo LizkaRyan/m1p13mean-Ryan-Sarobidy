@@ -186,4 +186,14 @@ export class EventValidation implements OnInit {
       error: (error) => console.error('Erreur lors de la validation de l\'événement:', error)
     });
   }
+
+  rejectEvent(id): void {
+    this.patchEvent(id, { status: { code: "REJECTED", label: "Rejeté" } }).subscribe({
+      next: (events) => {
+        this.changeEvents(events);
+        this.reservationsSubject.next(events.requests);
+      },
+      error: (error) => console.error('Erreur lors de la validation de l\'événement:', error)
+    });
+  }
 }
