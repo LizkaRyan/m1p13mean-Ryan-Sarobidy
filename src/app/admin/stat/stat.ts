@@ -5,32 +5,73 @@ import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { ReservationStat, ReservationUnpaid } from '../../../types/api';
 import { CommonModule } from '@angular/common';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { lucideSearch } from '@ng-icons/lucide';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-stat',
-  imports: [CommonModule],
+  imports: [CommonModule, NgIconComponent, FormsModule],
   templateUrl: './stat.html',
   styleUrl: './stat.css',
+  providers: [provideIcons({ search: lucideSearch })]
 })
 export class Stat implements AfterViewInit, OnInit {
 
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
   chart!: Chart;
-  @Output() onMarkPaid = new EventEmitter<any>();
-  @Output() onSendReminder = new EventEmitter<any>();
-  @Output() onViewDetails = new EventEmitter<any>();
   reservations$!: Observable<ReservationUnpaid[]>;
+
+  startMonth: string;
+  endMonth: string;
+
+  serchCanva() {
+    this.getStat(this.startMonth, this.endMonth).subscribe({
+      next: (stats) => {
+        this.updateChartData(stats);
+      },
+      error: (err) => console.error(err)
+    });
+    // Exemple : appel API ou filtrage
+  }
+
+  updateChartData(stats: ReservationStat[]) {
+    const labels = stats.map(s => s._id);
+    const paidData = stats.map(s => s.totalPaid);
+    const unpaidData = stats.map(s => s.totalUnpaid);
+    // Modifier les labels
+    this.chart.data.labels = labels;
+
+    // Modifier les valeurs
+    this.chart.data.datasets[0].data = paidData;
+    this.chart.data.datasets[1].data = unpaidData;
+
+    // Mettre à jour le chart
+    this.chart.update();
+  }
 
   showActions = false;
 
-  constructor(private http: HttpClient) { }
+  private formatOnlyMonth(date: Date): string {
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // ajoute 0 si < 10
+    return `${date.getFullYear()}-${month}`;
+  }
+
+  constructor(private http: HttpClient) {
+    const today = new Date();
+
+    this.endMonth = this.formatOnlyMonth(today);
+
+    const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 6, 1);
+    this.startMonth = this.formatOnlyMonth(sixMonthsAgo);
+  }
 
   getReservation(endMonth): Observable<ReservationUnpaid[]> {
     return this.http.get<ReservationUnpaid[]>(`${environment.baseUrl}/reservations/unpaid?endMonth=${endMonth}`);
   }
 
   ngAfterViewInit(): void {
-    this.getStat('2026-01', '2026-12').subscribe({
+    this.getStat(this.startMonth, this.endMonth).subscribe({
       next: (stats) => {
         this.createChart(stats);
       },
