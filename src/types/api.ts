@@ -15,6 +15,10 @@ export interface Role {
 export interface Shop {
     _id: string;
     name: string;
+    category: {
+        code: string;
+        label: string;
+    }
 }
 
 export interface LoginResponse {
@@ -77,4 +81,14 @@ export interface ReservationStat {
     _id: string;
     totalPaid: number;
     totalUnpaid: number;
+}
+
+export interface ReservationUnpaid {
+    shop: Shop
+    shopUser: User,
+    room: Room,
+    reservationId: string;
+    month: string;
+    amount: number;
+    status: string;
 }
