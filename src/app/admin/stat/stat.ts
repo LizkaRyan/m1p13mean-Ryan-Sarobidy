@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Output, ViewChild, EventEmitter, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { Chart } from 'chart.js/auto';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -16,7 +16,7 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './stat.css',
   providers: [provideIcons({ search: lucideSearch })]
 })
-export class Stat implements AfterViewInit, OnInit {
+export class Stat implements AfterViewInit {
 
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
   chart!: Chart;
@@ -24,6 +24,7 @@ export class Stat implements AfterViewInit, OnInit {
 
   startMonth: string;
   endMonth: string;
+  endMonthCard: string;
 
   serchCanva() {
     this.getStat(this.startMonth, this.endMonth).subscribe({
@@ -33,6 +34,10 @@ export class Stat implements AfterViewInit, OnInit {
       error: (err) => console.error(err)
     });
     // Exemple : appel API ou filtrage
+  }
+
+  searchReservation(){
+    this.reservations$ = this.getReservation(this.endMonthCard);
   }
 
   updateChartData(stats: ReservationStat[]) {
@@ -61,6 +66,7 @@ export class Stat implements AfterViewInit, OnInit {
     const today = new Date();
 
     this.endMonth = this.formatOnlyMonth(today);
+    this.endMonthCard = this.endMonth;
 
     const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 6, 1);
     this.startMonth = this.formatOnlyMonth(sixMonthsAgo);
@@ -77,10 +83,7 @@ export class Stat implements AfterViewInit, OnInit {
       },
       error: (err) => console.error(err)
     });
-  }
-
-  ngOnInit(): void {
-    this.reservations$ = this.getReservation('2026-12');
+    this.reservations$ = this.getReservation(this.endMonthCard);
   }
 
   formatMonth(month: string): string {
