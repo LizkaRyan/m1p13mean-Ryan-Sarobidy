@@ -36,7 +36,7 @@ export class Stat implements AfterViewInit {
     // Exemple : appel API ou filtrage
   }
 
-  searchReservation(){
+  searchReservation() {
     this.reservations$ = this.getReservation(this.endMonthCard);
   }
 
@@ -105,32 +105,25 @@ export class Stat implements AfterViewInit {
     return diffDays > 0 ? diffDays : 0;
   }
 
-  isOverdue(month: string): boolean {
-    return this.getDaysOverdue(month) > 0;
-  }
-
-  markAsPaid(): void {
+  markAsPaid(id): void {
+    if (confirm('Êtes-vous sûr de marquer cette réservation comme payée ?')) {
+      this.patchPayment(id, 'PAID').subscribe({
+        next: (stats) => { },
+        error: (err) => {
+          console.error('Erreur lors de la mise à jour du statut:', err);
+        }
+      });
+      this.getStat(this.startMonth, this.endMonth).subscribe({
+        next: (stats) => {
+          this.createChart(stats);
+        },
+        error: (err) => console.error(err)
+      });
+      this.reservations$ = this.getReservation(this.endMonthCard);
+    }
   }
 
   sendReminder(): void {
-  }
-
-  viewDetails(): void {
-  }
-
-  handleMarkPaid(rent: any) {
-    console.log('Marquer comme payé:', rent);
-    // Appeler votre service API pour mettre à jour le statut
-  }
-
-  handleSendReminder(rent: any) {
-    console.log('Envoyer rappel à:', rent.shopUser.email);
-    // Appeler votre service d'envoi d'email
-  }
-
-  handleViewDetails(rent: any) {
-    console.log('Voir détails:', rent);
-    // Naviguer vers la page de détails ou ouvrir un modal
   }
 
   createChart(stats: ReservationStat[]) {
@@ -176,5 +169,9 @@ export class Stat implements AfterViewInit {
 
   getStat(startMonth: string, endMonth: string): Observable<ReservationStat[]> {
     return this.http.get<ReservationStat[]>(`${environment.baseUrl}/reservations/stats?startMonth=${startMonth}&endMonth=${endMonth}`);
+  }
+
+  patchPayment(id: string, status: string): Observable<ReservationStat[]> {
+    return this.http.patch<ReservationStat[]>(`${environment.baseUrl}/reservations/payment/${id}`, { status: status });
   }
 }

@@ -84,6 +84,7 @@ export interface ReservationStat {
 }
 
 export interface ReservationUnpaid {
+    _id: string;
     shop: Shop
     shopUser: User,
     room: Room,
