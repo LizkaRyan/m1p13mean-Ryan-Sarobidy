@@ -84,7 +84,7 @@ export class ReservationValidation implements OnInit {
 
   approveReservation(reservationId: string): void {
     this.processingId = reservationId;
-    if (confirm('Êtes-vous sûr de refuser cette demande ?')) {
+    if (confirm('Êtes-vous sûr d\'approuver cette demande ?')) {
       this.reservations$ = this.patchReservation(reservationId, true);
     }
   }

@@ -72,3 +72,9 @@ export interface EventAndRequest {
     events: EventData[];
     requests: RequestEvent[];
 }
+
+export interface ReservationStat {
+    _id: string;
+    totalPaid: number;
+    totalUnpaid: number;
+}
