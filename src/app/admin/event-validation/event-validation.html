@@ -10,10 +10,7 @@
             <div class="flex flex-col gap-3">
                 <div class="relative mb-4 w-full sm:w-auto sm:min-w-[300px]">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
+                        <ng-icon name="search" size="18" class="text-slate-400"></ng-icon>
                     </div>
                     <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange($event)"
                         placeholder="Rechercher par nom..."
@@ -105,11 +102,7 @@
                                             <button (click)="validateEvent(request._id)"
                                                 class="flex-1 bg-gradient-to-r from-emerald-500 to-green-500 text-white font-black py-4 px-6 rounded-xl hover:from-emerald-600 hover:to-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                                                 <div class="flex items-center justify-center gap-2">
-                                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                                                        stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="3" d="M5 13l4 4L19 7" />
-                                                    </svg>
+                                                    <ng-icon name="valider" size="18"></ng-icon>
                                                     Valider
                                                 </div>
                                             </button>
@@ -117,11 +110,7 @@
                                             <button (click)="rejectEvent(request._id)"
                                                 class="flex-1 bg-gradient-to-r from-red-500 to-rose-500 text-white font-black py-4 px-6 rounded-xl hover:from-red-600 hover:to-rose-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                                                 <div class="flex items-center justify-center gap-2">
-                                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                                                        stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="3" d="M6 18L18 6M6 6l12 12" />
-                                                    </svg>
+                                                    <ng-icon name="rejeter" size="18"></ng-icon>
                                                     Refuser
                                                 </div>
                                             </button>

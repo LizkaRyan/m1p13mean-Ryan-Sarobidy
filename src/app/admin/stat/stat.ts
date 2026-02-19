@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { ReservationStat, ReservationUnpaid } from '../../../types/api';
 import { CommonModule } from '@angular/common';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { lucideSearch } from '@ng-icons/lucide';
+import { lucideSearch, lucideMailbox, lucideCheck, lucideMail,lucideBox, lucideCoins, lucideUser } from '@ng-icons/lucide';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -14,7 +14,7 @@ import { FormsModule } from '@angular/forms';
   imports: [CommonModule, NgIconComponent, FormsModule],
   templateUrl: './stat.html',
   styleUrl: './stat.css',
-  providers: [provideIcons({ search: lucideSearch })]
+  providers: [provideIcons({ search: lucideSearch, empty: lucideMailbox, valider: lucideCheck, mail: lucideMail, box: lucideBox, coins: lucideCoins, user: lucideUser })]
 })
 export class Stat implements AfterViewInit {
 
