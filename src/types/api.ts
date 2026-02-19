@@ -15,6 +15,10 @@ export interface Role {
 export interface Shop {
     _id: string;
     name: string;
+    category: {
+        code: string;
+        label: string;
+    }
 }
 
 export interface LoginResponse {
@@ -71,4 +75,21 @@ export interface RequestEvent {
 export interface EventAndRequest {
     events: EventData[];
     requests: RequestEvent[];
+}
+
+export interface ReservationStat {
+    _id: string;
+    totalPaid: number;
+    totalUnpaid: number;
+}
+
+export interface ReservationUnpaid {
+    _id: string;
+    shop: Shop
+    shopUser: User,
+    room: Room,
+    reservationId: string;
+    month: string;
+    amount: number;
+    status: string;
 }

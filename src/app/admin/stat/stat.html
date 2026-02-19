@@ -1,0 +1,149 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div class="container m-auto px-4 py-8">
+        <div class="mb-10">
+            <h1
+                class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 mb-2">
+                Tableau de bord administrateur
+            </h1>
+        </div>
+        <div class="grid grid-cols-2 gap-8">
+            <div class="flex flex-col gap-3">
+                <div class="flex flex-row justify-between  gap-8">
+                    <div class="relative flex-1">
+                        <div class="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
+                            <ng-icon name="search" size="18"></ng-icon>
+                        </div>
+
+                        <input type="month" [(ngModel)]="endMonthCard"
+                            class="w-full pl-10 pr-10 py-2.5 border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none bg-white" />
+                    </div>
+                    <div class="flex justify-center">
+                        <button (click)="searchReservation()"
+                            class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold py-3 px-4 rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                            Rechercher
+                        </button>
+                    </div>
+                </div>
+                <div *ngIf="reservations$ " class="space-y-4">
+                    <div *ngIf="(reservations$ | async)?.length === 0"
+                        class="bg-white rounded-2xl shadow-lg border border-slate-200 p-12 text-center">
+                        <div class="text-6xl mb-4"><ng-icon name="empty" size="48"></ng-icon></div>
+                        <h3 class="text-xl font-semibold text-slate-700 mb-2">Aucune demande enregistrée</h3>
+                    </div>
+                </div>
+
+                <div *ngFor="let rent of reservations$ | async; let i = index"
+                    class="group relative bg-white rounded-3xl border-2 border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-300">
+
+                    <div class="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-indigo-600 to-purple-600">
+                    </div>
+
+                    <div class="p-6 pl-8">
+
+                        <div class="mb-6">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <h3 class="text-2xl font-black text-slate-800">{{ rent.shop.name }}</h3>
+                                        <span class="px-2.5 py-1 rounded-full text-xs font-bold border-2">
+                                            {{ rent.shop.category.label }}
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-slate-500 text-sm">
+                                        <ng-icon name="box" size="16"></ng-icon>
+                                        <span class="font-semibold">{{ rent.room.name }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section principale: Montant & Mois -->
+                        <div
+                            class="bg-gradient-to-br from-red-50 to-rose-50 rounded-2xl p-5 border-2 border-red-200 mb-5">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div
+                                        class="text-red-700 text-sm font-bold tracking-wider mb-1 flex items-center gap-2">
+                                        <ng-icon name="coins" size="16"></ng-icon>
+                                        MONTANT DÛ
+                                    </div>
+                                    <div class="text-4xl font-black text-red-600">
+                                        {{ rent.amount }} Ar
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-slate-600 text-xs font-bold mb-1">PÉRIODE</div>
+                                    <div class="text-slate-800 font-black text-lg">{{ formatMonth(rent.month) }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Informations du locataire -->
+                        <div class="bg-slate-50 rounded-xl p-4 mb-5 border border-slate-200">
+                            <div class="text-xs font-bold text-slate-600 mb-3 flex items-center gap-2">
+                                <ng-icon name="user" size="16"></ng-icon>
+                                LOCATAIRE
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <div class="text-xs text-slate-500 mb-0.5">Nom</div>
+                                    <div class="font-bold text-slate-800">{{ rent.shopUser.name }}</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-500 mb-0.5">Email</div>
+                                    <div class="font-bold text-slate-800 truncate">{{ rent.shopUser.email }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex gap-2 pt-4 border-t-2 border-slate-100">
+                            <button (click)="markAsPaid(rent._id)"
+                                class="flex-1 bg-gradient-to-r from-emerald-500 to-green-500 text-white font-bold py-3 px-4 rounded-xl hover:from-emerald-600 hover:to-green-600 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                                <ng-icon name="valider" size="18"></ng-icon>
+                                Marquer payé
+                            </button>
+
+                            <button (click)="sendReminder(rent)"
+                                class="flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold py-3 px-4 rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                                <ng-icon name="mail" size="18"></ng-icon>
+                                Rappel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-1 p-3 bg-white h-[min-content] sticky top-2">
+                <h2 class="text-2xl font-bold text-slate-800 mb-4">Statistiques de réservation</h2>
+                <div class="relative flex flex-col gap-4 mb-4 w-full sm:w-auto sm:min-w-[300px]">
+                    <div class="flex flex-row justify-between">
+                        <div class="relative">
+                            <div class="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
+                                <ng-icon name="search" size="18"></ng-icon>
+                            </div>
+
+                            <input type="month" [(ngModel)]="startMonth"
+                                class="w-full pl-10 pr-10 py-2.5 border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none bg-white" />
+                        </div>
+                        <div class="relative">
+                            <div class="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
+                                <ng-icon name="search" size="18"></ng-icon>
+                            </div>
+
+                            <input type="month" [(ngModel)]="endMonth"
+                                class="w-full pl-10 pr-10 py-2.5 border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none bg-white" />
+                        </div>
+                    </div>
+                    <div class="flex justify-center">
+                        <button (click)="serchCanva()"
+                            class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold py-3 px-4 rounded-xl hover:from-blue-600 hover:to-indigo-600 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                            Rechercher
+                        </button>
+                    </div>
+                </div>
+                <canvas #chartCanvas></canvas>
+            </div>
+        </div>
+    </div>
+</div>

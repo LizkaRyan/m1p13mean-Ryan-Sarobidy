@@ -13,7 +13,10 @@ import { BehaviorSubject, map, Observable, combineLatest } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import {
-  lucideMailbox
+  lucideMailbox,
+  lucideSearch,
+  lucideCheck,
+  lucideX
 } from '@ng-icons/lucide';
 
 @Component({
@@ -22,7 +25,7 @@ import {
   templateUrl: './event-validation.html',
   styleUrls: ['./event-validation.css'],
   imports: [CommonModule, FullCalendarModule, FormsModule, NgIconComponent],
-  providers: [provideIcons({ empty: lucideMailbox })]
+  providers: [provideIcons({ empty: lucideMailbox, search: lucideSearch, valider: lucideCheck, rejeter: lucideX })]
 })
 export class EventValidation implements OnInit {
   calendarOptions!: CalendarOptions;
