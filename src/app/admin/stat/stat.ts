@@ -123,7 +123,29 @@ export class Stat implements AfterViewInit {
     }
   }
 
-  sendReminder(): void {
+  sendReminder(reservation: ReservationUnpaid): void {
+    if (confirm('Êtes-vous sûr d\'envoyer un rappel à ce locataire ?')) {
+      const notification = {
+        message: `Rappel de paiement de la "${reservation.room.name}" avec le montant de ${reservation.amount.toLocaleString('fr-F')} Ar pour le mois de ${this.formatMonth(reservation.month)}`,
+        type: {
+          code: 'PAYMENT_REMINDER',
+          label: 'Rappel de paiement'
+        },
+        payload: {
+          boxId: reservation.room._id,
+          reservationId: reservation._id
+        }
+      }
+      this.http.post(`${environment.baseUrl}/users/${reservation.shopUser._id}/notifications`, notification).subscribe({
+        next: () => {
+          alert('Rappel envoyé avec succès !');
+        },
+        error: (err) => {
+          console.error('Erreur lors de l\'envoi du rappel:', err);
+          alert('Une erreur est survenue lors de l\'envoi du rappel.');
+        }
+      });
+    }
   }
 
   createChart(stats: ReservationStat[]) {
