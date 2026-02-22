@@ -34,7 +34,7 @@ export class Login {
           this.router.navigate(['/boutique']);
           return;
         }
-        this.router.navigate(['/accueil']);
+        this.router.navigate(['/event']);
       }
     });
   }

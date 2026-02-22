@@ -5,7 +5,7 @@ import { FullCalendarComponent, FullCalendarModule } from '@fullcalendar/angular
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { Calendar, CalendarOptions } from '@fullcalendar/core';
+import {  CalendarOptions } from '@fullcalendar/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   lucidePlus,
@@ -17,7 +17,6 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { EventData } from '../../../types/api';
-import { title } from 'process';
 
 @Component({
   selector: 'app-event',

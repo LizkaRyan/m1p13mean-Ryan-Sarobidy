@@ -27,6 +27,11 @@ export const routes: Routes = [
       import('./admin/event/event').then(m => m.Event)
   },
   {
+    path: 'event',
+    loadComponent: () =>
+      import('./client/client-event/client-event').then(m => m.ClientEvent)
+  },
+  {
     path: 'admin/event-validation',
     loadComponent: () =>
       import('./admin/event-validation/event-validation').then(m => m.EventValidation),
