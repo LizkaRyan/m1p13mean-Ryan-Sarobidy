@@ -39,9 +39,9 @@ export class Navbar implements OnInit {
   private notificationsSubject = new BehaviorSubject<Notification[]>([]);
   notifications$ = this.notificationsSubject.asObservable();
 
-  unreadCount$ = this.notifications$.pipe(
-    map(notifications => notifications.filter(n => !n.read).length)
-  );
+  private unreadCountSubject = new BehaviorSubject<number>(0);
+  unreadCount$ = this.unreadCountSubject.asObservable();
+
   page = 1;
   limit = 2;
 
@@ -88,6 +88,7 @@ export class Navbar implements OnInit {
     this.page = 1;
     this.notificationsSubject.next([]);
     this.loadNotifications();
+    this.loadUnreadCount();
 
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
@@ -95,6 +96,18 @@ export class Navbar implements OnInit {
         this.page = 1;
         this.notificationsSubject.next([]);
       })
+  }
+
+  loadUnreadCount(): void {
+    const userId = this.authService.getUserId();
+    if (!userId) return;
+
+    this.getNbNotificationUnread(userId).subscribe(count => {
+      this.unreadCountSubject.next(count);
+      if (count > 0) {
+        this.makeItAllRead(userId).subscribe(() => {});
+      }
+    });
   }
 
   loadNotifications(): void {
@@ -117,6 +130,14 @@ export class Navbar implements OnInit {
 
   getNotifications(userId: string, page: number, limit: number): Observable<Notification[]> {
     return this.http.get<Notification[]>(`${environment.baseUrl}/users/${userId}/notifications?page=${page}&limit=${limit}`);
+  }
+
+  getNbNotificationUnread(userId: string): Observable<number> {
+    return this.http.get<number>(`${environment.baseUrl}/users/${userId}/notifications/nb-unread`);
+  }
+
+  makeItAllRead(userId: string): Observable<any> {
+    return this.http.patch(`${environment.baseUrl}/users/${userId}/notifications/mark-all-read`, {});
   }
 
   private navbarItems = {
@@ -156,11 +177,6 @@ export class Navbar implements OnInit {
 
   closeNotifications(): void {
     this.isNotificationsOpen = false;
-  }
-
-  markAsRead(notification: Notification): void {
-    notification.read = true;
-    this.closeNotifications();
   }
 
   seeMore(): void {

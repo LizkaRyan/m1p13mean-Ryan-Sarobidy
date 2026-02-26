@@ -46,8 +46,7 @@
                                     <p class="text-sm">Aucune notification</p>
                                 </div>
 
-                                <a *ngFor="let notification of notifications" [routerLink]="notification.link"
-                                    (click)="markAsRead(notification)"
+                                <div *ngFor="let notification of notifications" [routerLink]="notification.link"
                                     class="block px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100"
                                     [class.bg-blue-50]="!notification.read">
                                     <div class="flex items-start gap-3">
@@ -67,7 +66,7 @@
                                             <span class="w-2 h-2 bg-indigo-600 rounded-full inline-block"></span>
                                         </div>
                                     </div>
-                                </a>
+                                </div>
                             </div>
 
                             <div *ngIf="notifications.length > 0" class="px-4 py-3 border-t border-gray-200 bg-gray-50">
