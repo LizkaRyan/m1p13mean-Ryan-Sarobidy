@@ -1,19 +1,40 @@
-import { Component } from '@angular/core';
+import { Component, HostListener, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { RouterModule } from '@angular/router';
+import { lucideBell } from '@ng-icons/lucide';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { Observable } from 'rxjs';
+import { environment } from '../environments/environment';
+import { HttpClient } from '@angular/common/http';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+
+export interface Notification {
+  type: { code: string, label: string },
+  payload: any,
+  message: string,
+  _id: string,
+  read: boolean,
+  createdAt: string,
+}
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, NgIconComponent],
   templateUrl: './navbar.html',
-  styleUrls: ['./navbar.css']
+  styleUrls: ['./navbar.css'],
+  providers: [provideIcons({ bell: lucideBell })]
 })
-export class Navbar {
+export class Navbar implements OnInit {
   isMenuOpen = false;
   role: string | null = null;
   menuItems: any[] = [];
+  isNotificationsOpen = false;
+  notifications: Notification[] = [];
+  private http = inject(HttpClient);
+  private router = inject(Router);
 
   constructor(private authService: AuthService) {
     this.authService.role$.subscribe(role => {
@@ -28,6 +49,59 @@ export class Navbar {
       }
       this.menuItems = this.navbarItems['client'];
     });
+  }
+
+  getTimeAgo(dateInput: string | Date): string {
+    const date = new Date(dateInput);
+    const now = new Date();
+
+    const diffInMs = now.getTime() - date.getTime();
+    const diffInHours = diffInMs / (1000 * 60 * 60);
+    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+    // Moins d'une heure
+    if (diffInHours < 1) {
+      return "moins d'1 heure";
+    }
+
+    // Moins de 24 heures
+    if (diffInHours < 24) {
+      const hours = Math.floor(diffInHours);
+      return `il y a ${hours} heure${hours > 1 ? 's' : ''}`;
+    }
+
+    // Plus de 24 heures
+    const days = Math.floor(diffInDays);
+    return `il y a ${days} jour${days > 1 ? 's' : ''}`;
+  }
+
+  ngOnInit(): void {
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.loadNotifications();
+      });
+
+    this.loadNotifications(); // charge au démarrage
+  }
+
+  loadNotifications(): void {
+    const userId = this.authService.getUserId(); // adapte selon ton service
+
+    if (!userId) return;
+
+    this.getNotifications(userId, 1, 10).subscribe({
+      next: (data) => {
+        this.notifications = data;
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
+  }
+
+  getNotifications(userId: string, page: number, limit: number): Observable<Notification[]> {
+    return this.http.get<Notification[]>(`${environment.baseUrl}/users/${userId}/notifications?page=${page}&limit=${limit}`);
   }
 
   private navbarItems = {
@@ -48,11 +122,50 @@ export class Navbar {
   };
 
 
-  toggleMenu() {
-    this.isMenuOpen = !this.isMenuOpen;
+  get unreadCount(): number {
+    return this.notifications.filter(n => !n.read).length;
   }
 
-  closeMenu() {
+  toggleMenu(): void {
+    this.isMenuOpen = !this.isMenuOpen;
+    if (this.isMenuOpen) {
+      this.isNotificationsOpen = false;
+    }
+  }
+
+  closeMenu(): void {
     this.isMenuOpen = false;
+  }
+
+  toggleNotifications(): void {
+    this.isNotificationsOpen = !this.isNotificationsOpen;
+    if (this.isNotificationsOpen) {
+      this.isMenuOpen = false;
+    }
+  }
+
+  closeNotifications(): void {
+    this.isNotificationsOpen = false;
+  }
+
+  markAsRead(notification: Notification): void {
+    notification.read = true;
+    this.closeNotifications();
+  }
+
+  seeMore(): void {
+    this.notifications.forEach(n => n.read = true);
+  }
+
+  // Fermer les dropdowns en cliquant à l'extérieur
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    const clickedInside = target.closest('nav');
+
+    if (!clickedInside) {
+      this.isMenuOpen = false;
+      this.isNotificationsOpen = false;
+    }
   }
 }

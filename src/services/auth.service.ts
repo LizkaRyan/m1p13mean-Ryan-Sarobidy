@@ -9,6 +9,9 @@ export class AuthService {
   private roleSubject = new BehaviorSubject<string | null>(null);
   role$ = this.roleSubject.asObservable();
 
+  private userId = new BehaviorSubject<string | null>(null);
+  userId$ = this.userId.asObservable();
+
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
 
     if (isPlatformBrowser(this.platformId)) {
@@ -17,6 +20,20 @@ export class AuthService {
         this.roleSubject.next(savedRole);
       }
     }
+  }
+
+  setUserId(userId: string) {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem(environment.userIdKey, userId);
+    }
+    this.userId.next(userId);
+  }
+
+  getUserId(): string | null {
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem(environment.userIdKey);
+    }
+    return null;
   }
 
   setRole(role: string) {

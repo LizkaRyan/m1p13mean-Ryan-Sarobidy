@@ -26,6 +26,7 @@ export class Login {
       next: (res) => {
         this.authService.setRole(res.user.role);
         this.authService.setToken(res.token);
+        this.authService.setUserId(res.user._id);
         if (res.user.role.toLocaleLowerCase() === "admin") {
           this.router.navigate(['/admin']);
           return;
