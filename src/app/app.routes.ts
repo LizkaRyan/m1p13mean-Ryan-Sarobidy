@@ -7,6 +7,11 @@ export const routes: Routes = [
       import('./login/login').then(m => m.Login)
   },
   {
+    path: 'admin',
+    loadComponent: () =>
+      import('./admin/stat/stat').then(m => m.Stat)
+  },
+  {
     path: 'admin/room',
     loadComponent: () =>
       import('./admin/room/room').then(m => m.RoomPage)
@@ -20,6 +25,17 @@ export const routes: Routes = [
     path: 'admin/event',
     loadComponent: () =>
       import('./admin/event/event').then(m => m.Event)
+  },
+  {
+    path: 'event',
+    loadComponent: () =>
+      import('./client/client-event/client-event').then(m => m.ClientEvent)
+  },
+  {
+    path: 'admin/event-validation',
+    loadComponent: () =>
+      import('./admin/event-validation/event-validation').then(m => m.EventValidation),
+    runGuardsAndResolvers: 'always'
   },
   {
     path: '',

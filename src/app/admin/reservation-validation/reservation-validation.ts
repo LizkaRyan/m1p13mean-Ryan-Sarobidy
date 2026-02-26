@@ -2,11 +2,13 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   lucideBox,
-  lucideMailbox
+  lucideMailbox,
+  lucideCheck,
+  lucideX
 } from '@ng-icons/lucide';
 import { provideIcons, NgIconComponent } from '@ng-icons/core';
 import { HttpClient } from '@angular/common/http';
-import { empty, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 interface Category {
@@ -62,7 +64,7 @@ interface ReservationRequest {
   imports: [CommonModule, NgIconComponent],
   templateUrl: './reservation-validation.html',
   styleUrl: './reservation-validation.css',
-  providers: [provideIcons({ box: lucideBox, empty: lucideMailbox })]
+  providers: [provideIcons({ box: lucideBox, empty: lucideMailbox, valider: lucideCheck, rejeter: lucideX })]
 })
 export class ReservationValidation implements OnInit {
   reservations$!: Observable<ReservationRequest[]>;
@@ -84,7 +86,7 @@ export class ReservationValidation implements OnInit {
 
   approveReservation(reservationId: string): void {
     this.processingId = reservationId;
-    if (confirm('Êtes-vous sûr de refuser cette demande ?')) {
+    if (confirm('Êtes-vous sûr d\'approuver cette demande ?')) {
       this.reservations$ = this.patchReservation(reservationId, true);
     }
   }

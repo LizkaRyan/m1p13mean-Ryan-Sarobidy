@@ -27,14 +27,14 @@ export class Login {
         this.authService.setRole(res.user.role);
         this.authService.setToken(res.token);
         if (res.user.role.toLocaleLowerCase() === "admin") {
-          this.router.navigate(['/admin/room']);
+          this.router.navigate(['/admin']);
           return;
         }
         if (res.user.role.toLocaleLowerCase() === "boutique") {
           this.router.navigate(['/boutique']);
           return;
         }
-        this.router.navigate(['/accueil']);
+        this.router.navigate(['/event']);
       }
     });
   }
