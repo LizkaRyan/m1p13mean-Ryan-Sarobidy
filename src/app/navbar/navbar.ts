@@ -4,11 +4,12 @@ import { AuthService } from '../../services/auth.service';
 import { RouterModule } from '@angular/router';
 import { lucideBell } from '@ng-icons/lucide';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
+import { ChangeDetectorRef } from '@angular/core';
 
 export interface Notification {
   type: { code: string, label: string },
@@ -32,9 +33,17 @@ export class Navbar implements OnInit {
   role: string | null = null;
   menuItems: any[] = [];
   isNotificationsOpen = false;
-  notifications: Notification[] = [];
   private http = inject(HttpClient);
   private router = inject(Router);
+
+  private notificationsSubject = new BehaviorSubject<Notification[]>([]);
+  notifications$ = this.notificationsSubject.asObservable();
+
+  unreadCount$ = this.notifications$.pipe(
+    map(notifications => notifications.filter(n => !n.read).length)
+  );
+  page = 1;
+  limit = 2;
 
   constructor(private authService: AuthService) {
     this.authService.role$.subscribe(role => {
@@ -76,28 +85,34 @@ export class Navbar implements OnInit {
   }
 
   ngOnInit(): void {
+    this.page = 1;
+    this.notificationsSubject.next([]);
+    this.loadNotifications();
+
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
-        this.loadNotifications();
-      });
-
-    this.loadNotifications(); // charge au démarrage
+        this.page = 1;
+        this.notificationsSubject.next([]);
+      })
   }
 
   loadNotifications(): void {
-    const userId = this.authService.getUserId(); // adapte selon ton service
-
+    const userId = this.authService.getUserId();
     if (!userId) return;
 
-    this.getNotifications(userId, 1, 10).subscribe({
-      next: (data) => {
-        this.notifications = data;
-      },
-      error: (err) => {
-        console.error(err);
-      }
-    });
+    this.getNotifications(userId, this.page, this.limit)
+      .subscribe(data => {
+
+        const current = this.notificationsSubject.value;
+
+        this.notificationsSubject.next([
+          ...current,
+          ...data
+        ]);
+
+        this.page++;
+      });
   }
 
   getNotifications(userId: string, page: number, limit: number): Observable<Notification[]> {
@@ -120,11 +135,6 @@ export class Navbar implements OnInit {
       { label: 'Accueil', route: '/' },
     ]
   };
-
-
-  get unreadCount(): number {
-    return this.notifications.filter(n => !n.read).length;
-  }
 
   toggleMenu(): void {
     this.isMenuOpen = !this.isMenuOpen;
@@ -154,18 +164,14 @@ export class Navbar implements OnInit {
   }
 
   seeMore(): void {
-    this.notifications.forEach(n => n.read = true);
-  }
-
-  // Fermer les dropdowns en cliquant à l'extérieur
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    const target = event.target as HTMLElement;
-    const clickedInside = target.closest('nav');
-
-    if (!clickedInside) {
-      this.isMenuOpen = false;
-      this.isNotificationsOpen = false;
-    }
+    /*this.notifications.push({
+      type: { code: 'info', label: 'Information' },
+      payload: null,
+      message: 'Nouvelle notification',
+      _id: Math.random().toString(36).substring(2),
+      read: false,
+      createdAt: new Date().toISOString(),
+    })*/
+    this.loadNotifications();
   }
 }
