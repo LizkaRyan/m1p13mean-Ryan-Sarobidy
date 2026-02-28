@@ -5,14 +5,19 @@ import { environment } from '../app/environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private tokenSubject = new BehaviorSubject<string | null>(null);
+  token$ = this.tokenSubject.asObservable();
 
   private roleSubject = new BehaviorSubject<string | null>(null);
   role$ = this.roleSubject.asObservable();
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
-
     if (isPlatformBrowser(this.platformId)) {
+      const savedToken = localStorage.getItem(environment.tokenKey);
       const savedRole = localStorage.getItem(environment.roleKey);
+      if (savedToken) {
+        this.tokenSubject.next(savedToken);
+      }
       if (savedRole) {
         this.roleSubject.next(savedRole);
       }
@@ -30,13 +35,11 @@ export class AuthService {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem(environment.tokenKey, token);
     }
+    this.tokenSubject.next(token);
   }
 
   getToken(): string | null {
-    if (isPlatformBrowser(this.platformId)) {
-      return localStorage.getItem(environment.tokenKey);
-    }
-    return null;
+    return this.tokenSubject.getValue();
   }
 
   logout() {
@@ -44,6 +47,7 @@ export class AuthService {
       localStorage.removeItem(environment.roleKey);
       localStorage.removeItem(environment.tokenKey);
     }
+    this.tokenSubject.next(null);
     this.roleSubject.next(null);
   }
 }
