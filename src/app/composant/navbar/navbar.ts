@@ -1,15 +1,16 @@
 import { Component, HostListener, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../../services/auth.service';
 import { RouterModule } from '@angular/router';
 import { lucideBell } from '@ng-icons/lucide';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { environment } from '../environments/environment';
+import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Router, NavigationEnd } from '@angular/router';
-import { filter, map } from 'rxjs/operators';
-import { ChangeDetectorRef } from '@angular/core';
+import { filter } from 'rxjs/operators';
+import { lucideLogOut } from '@ng-icons/lucide';
+
 
 export interface Notification {
   type: { code: string, label: string },
@@ -26,7 +27,7 @@ export interface Notification {
   imports: [CommonModule, RouterModule, NgIconComponent],
   templateUrl: './navbar.html',
   styleUrls: ['./navbar.css'],
-  providers: [provideIcons({ bell: lucideBell })]
+  providers: [provideIcons({ bell: lucideBell, logout: lucideLogOut })]
 })
 export class Navbar implements OnInit {
   isMenuOpen = false;
@@ -58,6 +59,11 @@ export class Navbar implements OnInit {
       }
       this.menuItems = this.navbarItems['client'];
     });
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
   getTimeAgo(dateInput: string | Date): string {

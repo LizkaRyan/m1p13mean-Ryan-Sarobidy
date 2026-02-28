@@ -40,8 +40,7 @@
                         </div>
                         <ng-container *ngIf="notifications$ | async as notifications">
                             <div class="max-h-96 overflow-y-auto">
-                                <div *ngIf="notifications.length === 0"
-                                    class="px-4 py-8 text-center text-gray-500">
+                                <div *ngIf="notifications.length === 0" class="px-4 py-8 text-center text-gray-500">
                                     <ng-icon name="bell-off" size="32" class="mx-auto mb-2 text-gray-400"></ng-icon>
                                     <p class="text-sm">Aucune notification</p>
                                 </div>
@@ -77,6 +76,13 @@
                             </div>
                         </ng-container>
                     </div>
+                </div>
+
+                <div>
+                    <button (click)="logout()"
+                        class="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors cursor-pointer">
+                        <ng-icon name="logout" size="20"></ng-icon>
+                    </button>
                 </div>
             </div>
         </div>
