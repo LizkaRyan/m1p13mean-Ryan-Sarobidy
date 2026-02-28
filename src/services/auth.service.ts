@@ -60,6 +60,7 @@ export class AuthService {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem(environment.roleKey);
       localStorage.removeItem(environment.tokenKey);
+      localStorage.removeItem(environment.userIdKey);
     }
     this.roleSubject.next(null);
   }
