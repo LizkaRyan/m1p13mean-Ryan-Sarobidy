@@ -94,3 +94,26 @@ export interface ReservationUnpaid {
     amount: number;
     status: string;
 }
+
+interface Category {
+  code: string;
+  label: string;
+}
+
+interface ShopReservation {
+  category: Category;
+  _id: string;
+  name: string;
+  userId: string;
+}
+
+interface RoomReservation {
+  _id: string;
+  name: string;
+}
+
+export interface Reservation {
+  _id: string;
+  shopId: ShopReservation;
+  roomId: RoomReservation;
+}
