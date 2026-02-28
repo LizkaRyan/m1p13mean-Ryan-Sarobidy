@@ -53,8 +53,6 @@ export class Login {
   }
 
   onSignup(): void {
-    // Navigation vers la page d'inscription
     this.router.navigate(['/signup']);
-    console.log('Navigation vers la page d\'inscription');
   }
 }

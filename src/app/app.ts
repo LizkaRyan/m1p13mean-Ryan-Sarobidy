@@ -18,7 +18,7 @@ export class App {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
-        const hiddenRoutes = ['/login', '/register'];
+        const hiddenRoutes = ['/login', '/signup'];
 
         const show = !hiddenRoutes.includes(this.router.url);
 
