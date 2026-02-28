@@ -10,12 +10,27 @@ import { EventData } from '../../../types/api';
   styleUrl: './event-composant.css',
 })
 export class EventComposant {
-  @Input() event!: EventData;
-  @Input() viewOnCalendar!: (startDate: string) => void;
+  @Input() event: EventData;
+  @Input() viewOnCalendar: (startDate: string) => void;
+  @Input() validateEvent?: (id: string) => void;
+  @Input() refuseEvent?: (id: string) => void;
+  @Input() isRequest: boolean = false;
 
   onClick() {
     if (this.viewOnCalendar) {
       this.viewOnCalendar(this.event.startDate);
+    }
+  }
+
+  onValidate() {
+    if (this.validateEvent) {
+      this.validateEvent(this.event._id!);
+    }
+  }
+
+  onRefuse() {
+    if (this.refuseEvent) {
+      this.refuseEvent(this.event._id!);
     }
   }
 

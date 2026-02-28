@@ -18,13 +18,14 @@ import {
   lucideCheck,
   lucideX
 } from '@ng-icons/lucide';
+import { EventComposant } from '../../composant/event-composant/event-composant';
 
 @Component({
   selector: 'app-event-validation',
   standalone: true,
   templateUrl: './event-validation.html',
   styleUrls: ['./event-validation.css'],
-  imports: [CommonModule, FullCalendarModule, FormsModule, NgIconComponent],
+  imports: [CommonModule, FullCalendarModule, FormsModule, NgIconComponent, EventComposant],
   providers: [provideIcons({ empty: lucideMailbox, search: lucideSearch, valider: lucideCheck, rejeter: lucideX })]
 })
 export class EventValidation implements OnInit {
