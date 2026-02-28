@@ -26,6 +26,7 @@ export class Login {
       next: (res) => {
         this.authService.setRole(res.user.role);
         this.authService.setToken(res.token);
+        this.authService.setUserId(res.user._id);
         if (res.user.role.toLocaleLowerCase() === "admin") {
           this.router.navigate(['/admin']);
           return;
@@ -46,14 +47,12 @@ export class Login {
           observer.next(res);
           observer.complete();
         },
-        error: (err) => observer.error(err)
+        error: (err) => alert(err.error.message || 'Erreur lors de la connexion')
       });
     });
   }
 
   onSignup(): void {
-    // Navigation vers la page d'inscription
     this.router.navigate(['/signup']);
-    console.log('Navigation vers la page d\'inscription');
   }
 }

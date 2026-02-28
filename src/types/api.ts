@@ -51,6 +51,7 @@ export interface Dimension {
 export interface EventData {
     _id?: string;
     title: string;
+    shopId?: any;
     startDate: string;
     endDate: string;
     description: string;
@@ -92,4 +93,27 @@ export interface ReservationUnpaid {
     month: string;
     amount: number;
     status: string;
+}
+
+interface Category {
+  code: string;
+  label: string;
+}
+
+interface ShopReservation {
+  category: Category;
+  _id: string;
+  name: string;
+  userId: string;
+}
+
+interface RoomReservation {
+  _id: string;
+  name: string;
+}
+
+export interface Reservation {
+  _id: string;
+  shopId: ShopReservation;
+  roomId: RoomReservation;
 }

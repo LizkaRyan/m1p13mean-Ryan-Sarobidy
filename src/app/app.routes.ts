@@ -7,6 +7,11 @@ export const routes: Routes = [
       import('./login/login').then(m => m.Login)
   },
   {
+    path: 'signup',
+    loadComponent: () =>
+      import('./sign-up/sign-up').then(m => m.SignUp)
+  },
+  {
     path: 'admin',
     loadComponent: () =>
       import('./admin/stat/stat').then(m => m.Stat)
@@ -25,11 +30,6 @@ export const routes: Routes = [
     path: 'admin/event',
     loadComponent: () =>
       import('./admin/event/event').then(m => m.Event)
-  },
-  {
-    path: 'event',
-    loadComponent: () =>
-      import('./client/client-event/client-event').then(m => m.ClientEvent)
   },
   {
     path: 'admin/event-validation',
@@ -53,6 +53,21 @@ export const routes: Routes = [
     path: '',
     redirectTo: 'login',
     pathMatch: 'full'
+  },
+  {
+    path: 'event',
+    loadComponent: () =>
+      import('./client/client-event/client-event').then(m => m.ClientEvent)
+  },
+  {
+    path: 'shop',
+    loadComponent: () =>
+      import('./client/list-shop/list-shop').then(m => m.ListShop)
+  },
+  {
+    path: 'shop/:id',
+    loadComponent: () =>
+      import('./client/shop-detail/shop-detail').then(m => m.ShopDetail)
   }
 
 ];
