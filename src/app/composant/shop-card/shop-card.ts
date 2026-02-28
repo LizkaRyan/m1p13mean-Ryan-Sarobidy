@@ -25,6 +25,6 @@ export class ShopCard {
   }
 
   onViewDetails(){
-    this.router.navigate(['/shop'], { queryParams: { _id: this.reservation._id }});
+    this.router.navigate(['/shop/'+this.reservation._id]);
   }
 }

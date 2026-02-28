@@ -51,5 +51,10 @@ export const routes: Routes = [
     path: 'shop',
     loadComponent: () =>
       import('./client/list-shop/list-shop').then(m => m.ListShop)
+  },
+  {
+    path: 'shop/:id',
+    loadComponent: () =>
+      import('./client/shop-detail/shop-detail').then(m => m.ShopDetail)
   }
 ];
