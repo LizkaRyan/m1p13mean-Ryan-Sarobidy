@@ -1,0 +1,28 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div class="container mx-auto px-4 py-8">
+        <div class="mb-10">
+            <h1
+                class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 mb-2">
+                Les boutiques
+            </h1>
+        </div>
+
+        <!-- Liste des réservations -->
+        <div *ngIf="(shops$ | async)?.length === 0"
+            class="space-y-4 mb-6">
+            <div 
+                class="bg-white rounded-2xl shadow-lg border border-slate-200 p-12 text-center">
+                <div class="text-6xl mb-4"><ng-icon name="empty" size="48"></ng-icon></div>
+                <h3 class="text-xl font-semibold text-slate-700 mb-2">Aucune boutique pour le moment</h3>
+            </div>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div *ngFor="let shop of (shops$ | async); let i = index"
+                class="group bg-white rounded-2xl border-2 border-slate-200 overflow-hidden hover:border-indigo-300 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+
+                <app-shop-card [reservation]="shop" />
+            </div>
+        </div>
+    </div>
+</div>

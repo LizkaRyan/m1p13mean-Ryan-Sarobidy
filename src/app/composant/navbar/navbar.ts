@@ -159,7 +159,8 @@ export class Navbar implements OnInit {
       { label: 'Produits', route: '/products' },
     ],
     client: [
-      { label: 'Accueil', route: '/' },
+      { label: 'Accueil', route: '/shop' },
+      { label: 'Évènements', route: '/event' },
     ]
   };
 
