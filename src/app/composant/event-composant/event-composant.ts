@@ -1,11 +1,11 @@
 import { Component, Input } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
 import { EventData } from '../../../types/api';
-import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-event-composant',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, CommonModule],
   templateUrl: './event-composant.html',
   styleUrl: './event-composant.css',
 })
@@ -32,5 +32,9 @@ export class EventComposant {
       const diffHours = diffMs / (1000 * 60 * 60);
       return `${Math.ceil(diffHours)} heure${Math.ceil(diffHours) > 1 ? 's' : ''}`;
     }
+  }
+
+  getThemes(string: string): string[] {
+    return string.split(',').map(s => s.trim());
   }
 }

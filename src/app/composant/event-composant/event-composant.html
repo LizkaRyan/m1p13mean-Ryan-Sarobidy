@@ -27,7 +27,7 @@
                             {{ theme }}
                         </span>
                     </div>
-                    <div class="flex flex-row gap-8">
+                    <div class="flex flex-row gap-8 mb-6">
                         <div
                             class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-5 border-2 border-slate-200 mb-6">
                             <div class="space-y-4">
@@ -68,6 +68,15 @@
                                 </div>
                             </button>
                         </div>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 mt-4">
+                        <h4 class="text-sm font-bold text-slate-500 uppercase mb-3">
+                            Description
+                        </h4>
+
+                        <p class="text-slate-700 leading-relaxed whitespace-pre-line">
+                            {{ event.description }}
+                        </p>
                     </div>
                 </div>
             </div>

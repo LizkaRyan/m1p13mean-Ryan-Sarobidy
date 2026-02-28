@@ -51,6 +51,7 @@ export interface Dimension {
 export interface EventData {
     _id?: string;
     title: string;
+    shopId?: any;
     startDate: string;
     endDate: string;
     description: string;
