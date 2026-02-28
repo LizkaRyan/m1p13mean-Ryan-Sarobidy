@@ -13,13 +13,15 @@ import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideMailbox, lucideSearch } from '@ng-icons/lucide';
 import { FormsModule } from '@angular/forms';
+import { EventComposant } from '../../composant/event-composant/event-composant';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-client-event',
   standalone: true,
   templateUrl: './client-event.html',
   styleUrl: './client-event.css',
-  imports: [CommonModule, FullCalendarModule, FormsModule, NgIconComponent],
+  imports: [CommonModule, FullCalendarModule, FormsModule, NgIconComponent, EventComposant],
   providers: [provideIcons({ empty: lucideMailbox, search: lucideSearch })]
 })
 export class ClientEvent implements OnInit {
@@ -33,26 +35,14 @@ export class ClientEvent implements OnInit {
   eventsSubject = new BehaviorSubject<EventData[]>([]);
   events$ = this.eventsSubject.asObservable();
   private http = inject(HttpClient);
+  private selectedEventSubject = new BehaviorSubject<EventData | null>(null);
+  selectedEvent$ = this.selectedEventSubject.asObservable();
+  private route = inject(ActivatedRoute);
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
 
   onSearchChange(value: string) {
     this.searchTerm$.next(value);
-  }
-
-  getTimeBetween(date1: string | Date, date2: string | Date): string {
-    const d1 = new Date(date1).getTime();
-    const d2 = new Date(date2).getTime();
-
-    const diffMs = Math.abs(d2 - d1); // différence en millisecondes
-
-    const diffDays = diffMs / (1000 * 60 * 60 * 24);
-    if (diffDays >= 1) {
-      return `${Math.ceil(diffDays)} jour${Math.ceil(diffDays) > 1 ? 's' : ''}`;
-    } else {
-      const diffHours = diffMs / (1000 * 60 * 60);
-      return `${Math.ceil(diffHours)} heure${Math.ceil(diffHours) > 1 ? 's' : ''}`;
-    }
   }
 
   viewOnCalendar(startDate: string): void {
@@ -77,6 +67,22 @@ export class ClientEvent implements OnInit {
     if (this.isBrowser) {
       this.initCalendar();
     }
+
+    this.route.queryParams.subscribe(params => {
+      const id = params['_id'];
+      if(id){
+        this.getEventsByEventId(id).subscribe({
+          next: (event) => {
+            this.selectedEventSubject.next(event);
+          },
+          error: (err) => console.error('Erreur chargement event :', err)
+        });
+      }
+    });
+  }
+
+  getEventsByEventId(id: string): Observable<EventData> {
+    return this.http.get<EventData>(`${environment.baseUrl}/events/${id}`);
   }
 
   initCalendar(): void {
@@ -150,9 +156,16 @@ export class ClientEvent implements OnInit {
     };
   }
 
-  eventClick(info) {
-    this.searchTerm = info.event.title;
-    this.searchTerm$.next(this.searchTerm);
+  eventClick(info: any) {
+    const clickedId = info.event.extendedProps.id;
+
+    const currentEvents = this.eventsSubject.getValue();
+
+    const found = currentEvents.find(e => e._id === clickedId);
+
+    if (found) {
+      this.selectedEventSubject.next(found);
+    }
   }
 
   getEvents(year): Observable<EventData[]> {

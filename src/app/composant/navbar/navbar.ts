@@ -170,6 +170,12 @@ export class Navbar implements OnInit {
     }
   }
 
+  navigateToNotification(notification: Notification): void {
+    if(notification.type.code === 'NEW_EVENT') {
+      this.router.navigate(['/event'], { queryParams: { _id: notification.payload.eventId } });
+    }
+  }
+
   closeMenu(): void {
     this.isMenuOpen = false;
   }
@@ -186,14 +192,6 @@ export class Navbar implements OnInit {
   }
 
   seeMore(): void {
-    /*this.notifications.push({
-      type: { code: 'info', label: 'Information' },
-      payload: null,
-      message: 'Nouvelle notification',
-      _id: Math.random().toString(36).substring(2),
-      read: false,
-      createdAt: new Date().toISOString(),
-    })*/
     this.loadNotifications();
   }
 }
