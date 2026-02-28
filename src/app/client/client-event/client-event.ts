@@ -14,13 +14,14 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideMailbox, lucideSearch } from '@ng-icons/lucide';
 import { FormsModule } from '@angular/forms';
 import { EventComposant } from '../../composant/event-composant/event-composant';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-client-event',
   standalone: true,
   templateUrl: './client-event.html',
   styleUrl: './client-event.css',
-  imports: [CommonModule, FullCalendarModule, FormsModule, NgIconComponent,EventComposant],
+  imports: [CommonModule, FullCalendarModule, FormsModule, NgIconComponent, EventComposant],
   providers: [provideIcons({ empty: lucideMailbox, search: lucideSearch })]
 })
 export class ClientEvent implements OnInit {
@@ -36,6 +37,7 @@ export class ClientEvent implements OnInit {
   private http = inject(HttpClient);
   private selectedEventSubject = new BehaviorSubject<EventData | null>(null);
   selectedEvent$ = this.selectedEventSubject.asObservable();
+  private route = inject(ActivatedRoute);
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) { }
 
@@ -65,6 +67,22 @@ export class ClientEvent implements OnInit {
     if (this.isBrowser) {
       this.initCalendar();
     }
+
+    this.route.queryParams.subscribe(params => {
+      const id = params['_id'];
+      if(id){
+        this.getEventsByEventId(id).subscribe({
+          next: (event) => {
+            this.selectedEventSubject.next(event);
+          },
+          error: (err) => console.error('Erreur chargement event :', err)
+        });
+      }
+    });
+  }
+
+  getEventsByEventId(id: string): Observable<EventData> {
+    return this.http.get<EventData>(`${environment.baseUrl}/events/${id}`);
   }
 
   initCalendar(): void {

@@ -172,7 +172,7 @@ export class Navbar implements OnInit {
 
   navigateToNotification(notification: Notification): void {
     if(notification.type.code === 'NEW_EVENT') {
-      this.router.navigate(['/event']);
+      this.router.navigate(['/event'], { queryParams: { _id: notification.payload.eventId } });
     }
   }
 
