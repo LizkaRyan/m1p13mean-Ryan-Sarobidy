@@ -38,9 +38,13 @@ export class Navbar {
       { label: 'Validation de réservation', route: '/admin/reservation-validation' },
       { label: 'Validation d\'évènement', route: '/admin/event-validation' },
     ],
+    // boutique: [
+    //   { label: 'Accueil', route: '/' },
+    //   { label: 'Produits', route: '/products' },
+    // ],
     boutique: [
-      { label: 'Accueil', route: '/' },
-      { label: 'Produits', route: '/products' },
+      { label: 'Accueil', route: '/boutique' },
+      { label: 'Réservations', route: '/boutique/reservation' },
     ],
     client: [
       { label: 'Accueil', route: '/' },
