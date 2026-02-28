@@ -37,9 +37,22 @@ export const routes: Routes = [
       import('./admin/event-validation/event-validation').then(m => m.EventValidation),
     runGuardsAndResolvers: 'always'
   },
+  { path: 'boutique', 
+    loadComponent: () => 
+      import('./boutique/boutique').then(m => m.Boutique) 
+  },
+  { path: 'boutique/reservation',
+    loadComponent: () => 
+      import('./boutique/reservation/reservation').then(m => m.Reservation) 
+  },
+  { path: 'boutique/reservation/select-shop',
+    loadComponent: () => 
+      import('./boutique/select-shop/select-shop').then(m => m.SelectShop) 
+  },
   {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full'
   }
+
 ];
