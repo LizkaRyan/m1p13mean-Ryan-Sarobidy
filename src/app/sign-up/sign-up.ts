@@ -78,7 +78,7 @@ export class SignUp {
             observer.next(res);
             observer.complete();
           },
-          error: (err) => observer.error(err)
+          error: (err) => alert(err.error.message || 'Erreur lors de l\'inscription')
         });
       });
     }

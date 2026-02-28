@@ -47,7 +47,7 @@ export class Login {
           observer.next(res);
           observer.complete();
         },
-        error: (err) => observer.error(err)
+        error: (err) => alert(err.error.message || 'Erreur lors de la connexion')
       });
     });
   }
