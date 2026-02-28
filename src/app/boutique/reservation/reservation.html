@@ -1,0 +1,33 @@
+<h2>Réservation de salles</h2>
+
+<div *ngIf="alertMessage" class="custom-alert" [ngClass]="alertType">
+  {{ alertMessage }}
+  <span class="close-btn" (click)="closeAlert()">×</span>
+</div>
+
+<table class="data-table" *ngIf="rooms.length; else noData">
+  <thead>
+    <tr>
+      <th>Nom</th>
+      <th>Capacité</th>
+      <th>Location mensuelle</th>
+      <th>Disponible</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let r of rooms">
+      <td>{{ r.name }}</td>
+      <td>{{ r.capacity }}</td>
+      <td>{{ r.rentPrice}}</td>
+      <td>{{ r.status.label }}</td>
+      <td>
+        <button class="btn btn-primary" (click)="reserveRoom(r)">Réserver</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<ng-template #noData>
+  <p>Aucune salle disponible pour le moment.</p>
+</ng-template>
