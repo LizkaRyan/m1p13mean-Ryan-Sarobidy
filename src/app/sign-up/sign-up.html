@@ -2,10 +2,10 @@
   <!-- Conteneur principal en deux colonnes -->
   <div class="max-w-6xl w-full bg-white rounded-2xl shadow-xl overflow-hidden">
     <div class="grid md:grid-cols-2 min-h-[600px]">
-      
+
       <!-- GAUCHE : Section texte / branding -->
       <div class="bg-blue-600 p-12 flex flex-col justify-center relative overflow-hidden">
-        
+
         <div class="relative z-10">
           <!-- Logo / Icône -->
           <div class="mb-8">
@@ -18,18 +18,18 @@
 
           <!-- Titre principal -->
           <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">
-            Bienvenue sur<br />CenterHub
+            Rejoignez<br />CenterHub
           </h1>
 
           <!-- Description -->
           <p class="text-blue-100 text-lg mb-8 leading-relaxed">
-            La plateforme de confiance pour gérer vos projets professionnels avec efficacité et simplicité.
+            Créez votre compte et commencez à gérer vos projets professionnels dès aujourd'hui.
           </p>
 
           <!-- Badge fun -->
           <div class="inline-flex items-center gap-2 bg-orange-400 px-5 py-2 rounded-full mb-8">
-            <span class="text-xl">✨</span>
-            <span class="text-sm font-semibold text-white">+10 000 utilisateurs actifs</span>
+            <span class="text-xl">🚀</span>
+            <span class="text-sm font-semibold text-white">Inscription gratuite et rapide</span>
           </div>
 
           <!-- Points clés -->
@@ -38,43 +38,62 @@
               <svg class="w-5 h-5 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
               </svg>
-              <span>100% sécurisé et confidentiel</span>
+              <span>Accès immédiat après inscription</span>
             </div>
             <div class="flex items-center gap-3">
               <svg class="w-5 h-5 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
               </svg>
-              <span>Interface intuitive et moderne</span>
+              <span>Aucune carte bancaire requise</span>
             </div>
             <div class="flex items-center gap-3">
               <svg class="w-5 h-5 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
               </svg>
-              <span>Support client réactif 7j/7</span>
+              <span>Données 100% sécurisées</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- DROITE : Formulaire de connexion -->
+      <!-- DROITE : Formulaire d'inscription -->
       <div class="p-12 flex flex-col justify-center">
         <div class="max-w-md w-full mx-auto">
           <h2 class="text-3xl font-bold text-slate-900 mb-2">
-            Connexion
+            Créer un compte
           </h2>
           <p class="text-slate-600 mb-8">
-            Accédez à votre espace personnel
+            Renseignez vos informations pour commencer
           </p>
 
           <!-- Formulaire -->
-          <form (ngSubmit)="onLogin()" class="space-y-5">
+          <form (ngSubmit)="onSignup()" class="space-y-5">
+
+            <!-- Prénom + Nom sur la même ligne -->
+            <div class="grid gap-4">
+              <div>
+                <label for="name" class="block text-sm font-semibold text-slate-700 mb-2">
+                  Nom
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  [(ngModel)]="name"
+                  class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                  placeholder="Jean"
+                  required
+                />
+              </div>
+            </div>
+
             <!-- Email -->
             <div>
               <label for="email" class="block text-sm font-semibold text-slate-700 mb-2">
                 Adresse email
               </label>
-              <input 
-                type="email" 
+              <input
+                type="email"
                 id="email"
                 name="email"
                 [(ngModel)]="email"
@@ -84,13 +103,30 @@
               />
             </div>
 
+            <div>
+              <label for="role" class="block text-sm font-semibold text-slate-700 mb-2">
+                Rôle
+              </label>
+              <select
+                id="role"
+                name="role"
+                [(ngModel)]="role"
+                class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent bg-white text-slate-700"
+                required
+              >
+                <option value="" disabled selected>Sélectionnez un rôle</option>
+                <option value="client">Client</option>
+                <option value="boutique">Boutique</option>
+              </select>
+            </div>
+
             <!-- Mot de passe -->
             <div>
               <label for="password" class="block text-sm font-semibold text-slate-700 mb-2">
                 Mot de passe
               </label>
-              <input 
-                type="password" 
+              <input
+                type="password"
                 id="password"
                 name="password"
                 [(ngModel)]="password"
@@ -100,12 +136,28 @@
               />
             </div>
 
-            <!-- Bouton de connexion -->
-            <button 
+            <!-- Confirmation mot de passe -->
+            <div>
+              <label for="confirmPassword" class="block text-sm font-semibold text-slate-700 mb-2">
+                Confirmer le mot de passe
+              </label>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                [(ngModel)]="confirmPassword"
+                class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+
+            <!-- Bouton d'inscription -->
+            <button
               type="submit"
-              (click)="onLogin()"
+              (click)="onSignup()"
               class="w-full bg-blue-600 text-white font-semibold py-3 cursor-pointer rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2">
-              Se connecter
+              Créer mon compte
             </button>
           </form>
 
@@ -116,11 +168,11 @@
             <div class="flex-1 border-t border-slate-300"></div>
           </div>
 
-          <!-- Bouton inscription -->
-          <button 
-            (click)="onSignup()"
+          <!-- Lien retour connexion -->
+          <button
+            (click)="onLogin()"
             class="w-full bg-white border-2 cursor-pointer border-blue-600 text-blue-600 font-semibold py-3 rounded-lg hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2">
-            Créer un compte
+            Déjà un compte ? Se connecter
           </button>
         </div>
       </div>
