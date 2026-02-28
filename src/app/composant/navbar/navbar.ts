@@ -156,7 +156,7 @@ export class Navbar implements OnInit {
     ],
     boutique: [
       { label: 'Accueil', route: '/' },
-      { label: 'Produits', route: '/products' },
+      { label: 'Réservations', route: '/boutique/reservation' },
     ],
     client: [
       { label: 'Accueil', route: '/shop' },
