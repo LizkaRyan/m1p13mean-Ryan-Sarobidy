@@ -1,0 +1,134 @@
+<div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden top-8">
+
+  <!-- HEADER -->
+  <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6">
+    <h2 class="text-2xl font-bold text-white" style="text-align: center;">
+      {{ editingIndex !== null ? 'Modifier la Boutique' : 'Nouvelle Boutique' }}
+    </h2>
+  </div>
+
+  <div *ngIf="successMessage" class="alert-success mx-8 mt-4">
+    ✅ {{ successMessage }}
+    <span class="close-btn" (click)="successMessage = null">×</span>
+  </div>
+
+  <form *ngIf="boutiqueForm" [formGroup]="boutiqueForm" (ngSubmit)="onSubmit()" class="p-8 space-y-6">
+
+    <!-- Nom -->
+    <div class="form-group">
+      <label class="block text-sm font-semibold text-slate-700 mb-2">Nom de la boutique</label>
+      <input
+        type="text"
+        formControlName="name"
+        class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none">
+      <div *ngIf="boutiqueForm.get('name')?.invalid && boutiqueForm.get('name')?.touched"
+        class="text-red-500 text-sm mt-1">
+        Le nom est requis
+      </div>
+    </div>
+
+    <!-- Catégorie -->
+    <div formGroupName="category" class="bg-slate-50 rounded-xl p-4 border-2 border-slate-200">
+      <h3 class="font-semibold text-slate-700 mb-4">Catégorie</h3>
+
+      <div class="form-group mb-4">
+        <label class="block text-sm font-semibold text-slate-700 mb-2">Code catégorie</label>
+        <input
+          type="text"
+          formControlName="code"
+          placeholder="Ex: MODE"
+          class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none">
+      </div>
+
+      <div class="form-group">
+        <label class="block text-sm font-semibold text-slate-700 mb-2">Libellé catégorie</label>
+        <input
+          type="text"
+          formControlName="label"
+          class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none">
+      </div>
+    </div>
+
+    <!-- Boutons -->
+    <div class="flex gap-3 pt-4">
+      <button
+        type="submit"
+        [disabled]="boutiqueForm.invalid"
+        class="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl">
+        {{ editingIndex !== null ? 'Mettre à jour' : 'Créer la boutique' }}
+      </button>
+
+      <button
+        *ngIf="editingIndex !== null"
+        type="button"
+        (click)="cancelEdit()"
+        class="px-6 py-3 border-2 border-slate-300 text-slate-700 font-semibold rounded-xl hover:bg-slate-50 transition-all">
+        Annuler
+      </button>
+    </div>
+  </form>
+
+  <!-- Liste des boutiques -->
+  <div class="px-8 pb-8">
+    <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 mt-6 mb-4" style="text-align: center;">
+      Vos boutiques
+    </h2>
+
+    <ng-container *ngIf="shops$ | async as shops">
+      <div class="table-card">
+        <table class="data-table" *ngIf="shops.length > 0; else noData">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Catégorie</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let shop of shops">
+              <td class="shop-name">{{ shop.name }}</td>
+              <td><span class="badge">{{ shop.category?.label ?? shop.category }}</span></td>
+              <td>
+                <div class="action-btns">
+                  <button class="btn-edit" title="Modifier" (click)="editShop(shop)">
+                    Modifier
+                  </button>
+                  <button class="btn-delete" title="Supprimer" (click)="deleteShop(shop)">
+                    Supprimer
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
+
+    <ng-template #noData>
+      <div class="empty-state">
+        <div class="empty-icon">🏪</div>
+        <p>Aucune boutique disponible pour le moment.</p>
+      </div>
+    </ng-template>
+  </div>
+
+  <ng-template #noData>
+    <p class="text-center text-slate-500 py-6">Aucune boutique disponible pour le moment.</p>
+  </ng-template>
+
+  <div *ngIf="confirmDeleteShop" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-icon">🗑️</div>
+      <h3 class="modal-title">Confirmer la suppression</h3>
+      <p class="modal-text">
+        Voulez-vous vraiment supprimer la boutique <strong>{{ confirmDeleteShop.name }}</strong> ?
+        Cette action est irréversible.
+      </p>
+      <div class="modal-actions">
+        <button class="btn-cancel-modal" (click)="cancelDelete()">Annuler</button>
+        <button class="btn-confirm-delete" (click)="confirmDelete()">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+</div>
