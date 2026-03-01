@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Room } from '../../../types/api';
@@ -21,9 +21,15 @@ export class Reservation implements OnInit {
   alertMessage: string | null = null;
   alertType: 'success' | 'error' = 'error';
 
+  private platformId = inject(PLATFORM_ID);
+
   constructor(private http: HttpClient, private router: Router, private authService: AuthService) { }
 
   ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const msg = history.state['successMessage'];
+      if (msg) this.showAlert(msg, 'success');
+    }
     this.fetchAvailableRooms().subscribe({
       next: r => this.roomSubject.next(r),
       error: err => {

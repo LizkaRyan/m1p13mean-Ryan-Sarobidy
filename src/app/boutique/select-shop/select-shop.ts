@@ -121,8 +121,10 @@ export class SelectShop implements OnInit {
         this.successMessage = `Demande de réservation envoyée pour ${shop.name} du ${dates.start} au ${dates.end}.`;
         setTimeout(() => {
           this.successMessage = null;
-           this.router.navigate(['/boutique/reservation']);
-        }, 4000);
+          this.router.navigate(['/boutique/reservation'], {
+            state: { successMessage: `Demande de réservation envoyée pour ${shop.name} du ${dates.start} au ${dates.end}.` }
+          });
+        }, 2000);
       },
       error: err => {
         console.error('Erreur lors de la réservation', err);
