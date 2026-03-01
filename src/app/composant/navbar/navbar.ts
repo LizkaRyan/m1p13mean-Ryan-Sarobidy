@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../services/auth.service';
 import { RouterModule } from '@angular/router';
@@ -155,7 +155,7 @@ export class Navbar implements OnInit {
       { label: 'Validation d\'évènement', route: '/admin/event-validation' },
     ],
     boutique: [
-      { label: 'Accueil', route: '/' },
+      { label: 'Accueil', route: '/boutique' },
       { label: 'Réservations', route: '/boutique/reservation' },
     ],
     client: [

@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Room } from '../../../types/api';
-import { Observable } from 'rxjs';
+import { Observable, switchMap, take, filter } from 'rxjs';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
+import { startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-boutique-reservation',
@@ -20,7 +22,7 @@ export class Reservation implements OnInit {
   alertMessage: string | null = null;
   alertType: 'success' | 'error' = 'success';
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router, private authService: AuthService) { }
 
   ngOnInit(): void {
     this.fetchAvailableRooms().subscribe({

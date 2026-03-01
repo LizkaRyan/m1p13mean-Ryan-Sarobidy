@@ -3,14 +3,31 @@
 <table class="data-table">
   <thead>
     <tr>
+      <th>Sélection</th>
       <th>Nom</th>
-      <th>Categorie</th>
+      <th>Catégorie</th>
+      <th>Actions</th>
     </tr>
   </thead>
   <tbody>
-    <tr>
-      <td>Exemple</td>
-      <td>Exemple cat</td>
+    <tr *ngFor="let shop of shops">
+      <!-- Checkbox : une seule sélection possible -->
+      <td>
+        <input 
+          type="checkbox" 
+          [checked]="selectedShop?.id === shop.id" 
+          (change)="selectShop(shop)">
+      </td>
+      <td>{{ shop.name }}</td>
+      <td>{{ shop.category }}</td>
+      <td>
+        <button 
+          class="btn btn-primary" 
+          [disabled]="!selectedShop" 
+          (click)="reserveShop(selectedShop)">
+          Réserver
+        </button>
+      </td>
     </tr>
   </tbody>
 </table>
