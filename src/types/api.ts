@@ -116,4 +116,5 @@ export interface Reservation {
   _id: string;
   shopId: ShopReservation;
   roomId: RoomReservation;
+  dateMax: string;
 }
