@@ -49,6 +49,10 @@ export const routes: Routes = [
     loadComponent: () => 
       import('./boutique/select-shop/select-shop').then(m => m.SelectShop) 
   },
+  { path: 'boutique/create-boutique',
+    loadComponent: () => 
+      import('./boutique/create-boutique/create-boutique').then(m => m.CreateBoutique) 
+  },
   {
     path: '',
     redirectTo: 'login',
