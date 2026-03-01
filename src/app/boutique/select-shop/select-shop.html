@@ -1,37 +1,77 @@
-<h2>Réservation de salles</h2>
+<div class="page-wrapper">
+  <h2 class="page-title" style="text-align: center;">Sélection de votre boutique</h2>
 
-<table class="data-table">
-  <thead>
-    <tr>
-      <th>Sélection</th>
-      <th>Nom</th>
-      <th>Catégorie</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let shop of shops">
-      <!-- Checkbox : une seule sélection possible -->
-      <td>
-        <input 
-          type="checkbox" 
-          [checked]="selectedShop?.id === shop.id" 
-          (change)="selectShop(shop)">
-      </td>
-      <td>{{ shop.name }}</td>
-      <td>{{ shop.category }}</td>
-      <td>
-        <button 
-          class="btn btn-primary" 
-          [disabled]="!selectedShop" 
-          (click)="reserveShop(selectedShop)">
-          Réserver
-        </button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+  <div *ngIf="warningMessage" class="alert-warning">
+    ⚠️ {{ warningMessage }}
+    <span class="close-btn" (click)="warningMessage = null">×</span>
+  </div>
 
-<ng-template #noData>
-  <p>Aucune salle disponible pour le moment.</p>
-</ng-template>
+  <div *ngIf="successMessage" class="alert-success">
+    ✅ {{ successMessage }}
+    <span class="close-btn" (click)="successMessage = null">×</span>
+  </div>
+
+  <div class="info-hint">
+    ℹ️ Cochez une boutique, renseignez les dates de début et de fin <em>(minimum 3 mois)</em>, puis cliquez sur <strong>Réserver</strong>.
+  </div>
+
+  <ng-container *ngIf="shops$ | async as shops">
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Sélection</th>
+            <th>Nom</th>
+            <th>Catégorie</th>
+            <th>Date début</th>
+            <th>Date fin</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let shop of shops" [class.selected-row]="isSelected(shop)">
+  <td>
+    <input
+      type="checkbox"
+      class="custom-checkbox"
+      [checked]="isSelected(shop)"
+      (change)="selectShop(shop)">
+  </td>
+  <td class="shop-name">{{ shop.name }}</td>
+  <td>
+    <span class="badge">{{ shop.category.label }}</span>
+  </td>
+  <td>
+    <input
+      type="date"
+      class="date-input"
+      [(ngModel)]="getDate(shop).start"
+      [disabled]="!isSelected(shop)"
+      [min]="today">
+  </td>
+  <td>
+    <input
+      type="date"
+      class="date-input"
+      [(ngModel)]="getDate(shop).end"
+      [disabled]="!isSelected(shop) || !getDate(shop).start"
+      [min]="getDate(shop).start || today">
+  </td>
+  <td>
+    <button
+      class="btn-reserve"
+      [disabled]="!isSelected(shop) || !getDate(shop).start || !getDate(shop).end"
+      (click)="reserveShop(selectedShop)">
+      Réserver
+    </button>
+  </td>
+</tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+
+  <ng-template #noData>
+    <div class="empty-state">
+      <div class="empty-icon">🏪</div>
+      <p>Aucune boutique dispon
