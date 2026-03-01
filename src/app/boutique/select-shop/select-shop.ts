@@ -52,6 +52,7 @@ export class SelectShop implements OnInit {
 
   private fetchShops(): Observable<Shop[]> {
     const id = this.authService.getUserId();
+    console.log('Fetching shops for user ID:', id);
     return this.http.get<Shop[]>(`${environment.baseUrl}/shops/user/${id}`);
   }
 
@@ -102,13 +103,31 @@ export class SelectShop implements OnInit {
 
     this.warningMessage = null;
 
-    console.log('=== Réservation ===');
-    console.log('Room :', this.room);
-    console.log('Shop :', shop);
-    console.log('Date début :', dates.start);
-    console.log('Date fin :', dates.end);
+    const payload = {
+      shopId: shop._id,
+      roomId: this.room!._id,
+      beginingDate: dates.start,
+      endingDate: dates.end
+    };
 
-    this.successMessage = `Demande de réservation envoyée pour ${shop.name} du ${dates.start} au ${dates.end}.`;
-    setTimeout(() => this.successMessage = null, 4000);
+    this.http.post(`${environment.baseUrl}/requests-reservation/create`, payload).subscribe({
+      next: () => {
+        console.log('=== Réservation créée ===');
+        console.log('Room :', this.room);
+        console.log('Shop :', shop);
+        console.log('Date début :', dates.start);
+        console.log('Date fin :', dates.end);
+
+        this.successMessage = `Demande de réservation envoyée pour ${shop.name} du ${dates.start} au ${dates.end}.`;
+        setTimeout(() => {
+          this.successMessage = null;
+           this.router.navigate(['/boutique/reservation']);
+        }, 4000);
+      },
+      error: err => {
+        console.error('Erreur lors de la réservation', err);
+        this.warningMessage = 'Une erreur est survenue lors de l\'envoi de la demande.';
+      }
+    });
   }
 }
