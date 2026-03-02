@@ -1,39 +1,93 @@
 <div class="boutique-container">
-  <h1>Bienvenue dans votre espace Boutique</h1>
-  
-  <div class="hero-section">
-    <p class="hero-text">Gérez votre boutique en toute simplicité et suivez vos performances en temps réel.</p>
-  </div>
 
-  <div class="content-section">
-    <div class="feature">
-      <h2>Réservations</h2>
-      <p>Consultez l'ensemble de vos réservations, suivez leurs statuts et optimisez votre gestion clientèle. Accédez à tous les détails de vos clients et planifiez vos ressources efficacement.</p>
+  <!-- HEADER -->
+  <div class="dashboard-header">
+    <div>
+      <h1>Dashboard Boutiques</h1>
+      <p class="hero-text">Vue d'ensemble de vos performances et réservations.</p>
     </div>
 
-    <div class="feature">
-      <h2>Suivi en Temps Réel</h2>
-      <p>Restez informé de chaque mouvement dans votre boutique. Recevez des notifications instantanées pour chaque nouvelle réservation et interaction client importante.</p>
-    </div>
-
-    <div class="feature">
-      <h2>Statistiques Détaillées</h2>
-      <p>Analysez vos tendances de vente, identifiez vos périodes fortes et optimisez votre stratégie commerciale grâce à des rapports complets et intuitifs.</p>
-    </div>
-
-    <div class="feature">
-      <h2>Gestion Simplifiée</h2>
-      <p>Une interface intuitive conçue pour les professionnels. Accédez rapidement à tous les outils nécessaires pour piloter votre boutique au quotidien.</p>
-    </div>
-
-    <div class="feature">
-      <h2>Support Client</h2>
-      <p>Notre équipe est à votre écoute pour vous aider à maximiser l'utilisation de la plateforme. Bénéficiez d'un support réactif et compétent.</p>
-    </div>
-
-    <div class="feature">
-      <h2>Sécurité Garantie</h2>
-      <p>Vos données et celles de vos clients sont protégées par les standards de sécurité les plus élevés. Travaillez en toute confiance et sérénité.</p>
+    <!-- Filtre dates -->
+    <div class="date-filter">
+      <div class="date-field">
+        <label>Du</label>
+        <input type="date" [(ngModel)]="dateStart">
+      </div>
+      <div class="date-field">
+        <label>Au</label>
+        <input type="date" [(ngModel)]="dateEnd">
+      </div>
+      <button class="btn-filter" (click)="applyFilter()">Appliquer</button>
     </div>
   </div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background: #ede9fe; color: #6366f1;">🏪</div>
+      <div class="kpi-info">
+        <span class="kpi-value">{{ kpis.totalBoutiques }}</span>
+        <span class="kpi-label">Boutiques</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background: #fef3c7; color: #f59e0b;">⏳</div>
+      <div class="kpi-info">
+        <span class="kpi-value">{{ kpis.demandesEnAttente }}</span>
+        <span class="kpi-label">Demandes en attente</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background: #d1fae5; color: #10b981;">✅</div>
+      <div class="kpi-info">
+        <span class="kpi-value">{{ kpis.reservationsActives }}</span>
+        <span class="kpi-label">Réservations actives</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background: #fce7f3; color: #ec4899;">🔔</div>
+      <div class="kpi-info">
+        <span class="kpi-value">{{ kpis.notifications }}</span>
+        <span class="kpi-label">Notifications</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRAPHES -->
+  <div class="charts-grid">
+
+    <div class="chart-card wide">
+      <h3 class="chart-title">Évolution des demandes de réservation par boutique</h3>
+      <canvas #evolutionChart></canvas>
+    </div>
+
+    <div class="chart-card">
+      <h3 class="chart-title">Statut des demandes</h3>
+      <canvas #statusChart></canvas>
+    </div>
+
+  </div>
+
+  <!-- CALENDRIER DES PLAGES -->
+  <div class="calendar-card">
+    <h3 class="chart-title">Calendrier des réservations</h3>
+    <div class="calendar-list">
+      <div *ngFor="let entry of calendarEntries" class="calendar-entry">
+        <div class="calendar-shop-name" [style.color]="entry.color">
+          <span class="dot" [style.background]="entry.color"></span>
+          {{ entry.shop }}
+        </div>
+        <div class="calendar-bar-wrapper">
+          <div class="calendar-bar" [style.background]="entry.color + '33'" [style.border-left]="'4px solid ' + entry.color">
+            <div class="calendar-progress" [style.width.%]="getDurationPercent(entry.start, entry.end)" [style.background]="entry.color"></div>
+          </div>
+          <div class="calendar-dates">
+            <span>{{ formatDate(entry.start) }}</span>
+            <span>{{ formatDate(entry.end) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
