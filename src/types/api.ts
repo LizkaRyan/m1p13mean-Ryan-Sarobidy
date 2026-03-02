@@ -144,4 +144,18 @@ export interface Product {
         label: string;
     };
     photos: ProductPhoto[];
+
+}
+export interface ReviewData {
+  _id: string;
+  userId: User;
+  shopId: string;
+  rating: number;
+  text: string;
+  createdAt: string;
+}
+
+export interface NewReview {
+  rating: number;
+  text: string;
 }

@@ -3,8 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { EventEmitter } from 'stream';
 import { environment } from '../../environments/environment';
+import { NewReview, ReviewData } from '../../../types/api';
+import { Reviews } from '../../composant/reviews/reviews';
+import { AuthService } from '../../../services/auth.service';
 
 interface Category {
   code: string;
@@ -32,10 +34,15 @@ export interface Shop {
   rooms: string[];
 }
 
+export interface ShopAPI {
+  canAddReview: boolean;
+  shop: Shop;
+}
+
 @Component({
   selector: 'app-shop-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, Reviews],
   templateUrl: './shop-detail.html',
   styleUrl: './shop-detail.css',
 })
@@ -44,29 +51,65 @@ export class ShopDetail implements OnInit {
 
   private shopSubject = new BehaviorSubject<Shop>(null);
   shop$ = this.shopSubject.asObservable();
-  
+  shopId: string;
+
   private http = inject(HttpClient);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
-  constructor(private router: Router) {}
+  private reviewsSubject = new BehaviorSubject<ReviewData[]>([]);
+  reviews$ = this.reviewsSubject.asObservable();
+
+  private canAddReviewSubject = new BehaviorSubject<boolean>(false);
+  canAddReview$ = this.canAddReviewSubject.asObservable();
+
+  addReview(review: NewReview): void {
+    this.postReview(review).subscribe({
+      next: (newReview) => {
+        const currentReviews = this.reviewsSubject.getValue();
+        this.reviewsSubject.next([newReview, ...currentReviews,]);
+        this.canAddReviewSubject.next(false);
+      },
+      error: (err) => {
+        alert('Erreur lors de l\'ajout de l\'avis');
+      }
+    });
+  }
+
+  postReview(data: NewReview): Observable<ReviewData> {
+    return this.http.post<ReviewData>(`${environment.baseUrl}/shops/${this.shopId}/reviews`, data);
+  }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
-      let shopId = params['id'];
-      if (shopId) {
-        this.getShop(shopId).subscribe({
-          next: (shop) => this.shopSubject.next(shop),
+      this.shopId = params['id'];
+      if (this.shopId) {
+        this.getShop(this.shopId).subscribe({
+          next: (shop) => {
+            this.shopSubject.next(shop.shop)
+            this.canAddReviewSubject.next(shop.canAddReview);
+          },
           error: (err) => {
-            alert('Erreur lors du chargement de la boutique');
+            console.error('Erreur lors du chargement de la boutique:', err);
             this.router.navigate(['/shop']);
+          }
+        });
+        this.getReviews(this.shopId).subscribe({
+          next: (reviews) => this.reviewsSubject.next(reviews),
+          error: (err) => {
+            console.error('Erreur lors du chargement des avis:', err);
           }
         });
       }
     });
   }
 
-  getShop(id: string): Observable<Shop> {
-    return this.http.get<Shop>(`${environment.baseUrl}/shops/${id}`);
+  getShop(id: string): Observable<ShopAPI> {
+    return this.http.get<ShopAPI>(`${environment.baseUrl}/shops/${id}`);
+  }
+
+  getReviews(shopId: string): Observable<ReviewData[]> {
+    return this.http.get<ReviewData[]>(`${environment.baseUrl}/shops/${shopId}/reviews`);
   }
 
   editShop(): void {

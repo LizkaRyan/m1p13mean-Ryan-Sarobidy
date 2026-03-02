@@ -69,26 +69,22 @@ export class Navbar implements OnInit {
   getTimeAgo(dateInput: string | Date): string {
     const date = new Date(dateInput);
     const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    const diffInMs = now.getTime() - date.getTime();
-    const diffInHours = diffInMs / (1000 * 60 * 60);
-    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+    if (diffDays === 0) return "Aujourd'hui";
+    if (diffDays === 1) return "Hier";
+    if (diffDays < 7) return `Il y a ${diffDays} jours`;
+    if (diffDays < 30) return `Il y a ${Math.floor(diffDays / 7)} semaines`;
+    if (diffDays < 365) return `Il y a ${Math.floor(diffDays / 30)} mois`;
 
-    // Moins d'une heure
-    if (diffInHours < 1) {
-      return "moins d'1 heure";
-    }
-
-    // Moins de 24 heures
-    if (diffInHours < 24) {
-      const hours = Math.floor(diffInHours);
-      return `il y a ${hours} heure${hours > 1 ? 's' : ''}`;
-    }
-
-    // Plus de 24 heures
-    const days = Math.floor(diffInDays);
-    return `il y a ${days} jour${days > 1 ? 's' : ''}`;
+    return date.toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   }
+  
 
   ngOnInit(): void {
     this.page = 1;
