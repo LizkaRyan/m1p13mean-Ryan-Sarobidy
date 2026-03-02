@@ -1,14 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, Output } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ReviewData, User } from '../../../types/api';
+import { NewReview, ReviewData, User } from '../../../types/api';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { lucideSend } from '@ng-icons/lucide';
-
-export interface NewReview {
-  rating: number;
-  text: string;
-}
+import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-reviews',
@@ -22,14 +21,17 @@ export class Reviews implements OnInit {
   @Input() reviews: ReviewData[] = [];
   @Input() shopId?: string;
   @Input() canAddReview: boolean = true;
-  @Input() currentUser?: User;
   Math = Math;
+  private http = inject(HttpClient);
 
   reviewForm!: FormGroup;
   hoveredRating: number = 0;
   isSubmitting: boolean = false;
 
-  constructor(private fb: FormBuilder) {
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+
+  constructor() {
     this.initForm();
   }
 
@@ -52,19 +54,37 @@ export class Reviews implements OnInit {
   onSubmit(): void {
     if (this.reviewForm.valid && !this.isSubmitting) {
       this.isSubmitting = true;
-      const newReview: NewReview = {
-        rating: this.reviewForm.value.rating,
-        text: this.reviewForm.value.text
-      };
 
+      const data = {
+        rating: this.reviewForm.value.rating,
+        text: this.reviewForm.value.text,
+        userId: this.authService.getUserId()
+      }
+
+      this.addReview(data);
 
       // Reset form after submission
-      setTimeout(() => {
+      /*setTimeout(() => {
         this.reviewForm.reset({ rating: 0, text: '' });
         this.hoveredRating = 0;
         this.isSubmitting = false;
-      }, 500);
+      }, 500)*/;
     }
+  }
+
+  addReview(review: NewReview): void {
+    this.postReview(review).subscribe({
+      next: (newReview) => {
+        this.reviews.push(newReview);
+      },
+      error: (err) => {
+        alert('Erreur lors de l\'ajout de l\'avis');
+      }
+    });
+  }
+
+  postReview(data: NewReview): Observable<ReviewData> {
+    return this.http.post<ReviewData>(`${environment.baseUrl}/shops/${this.shopId}/reviews`, data);
   }
 
   getStarArray(rating: number): boolean[] {

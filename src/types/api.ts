@@ -127,3 +127,8 @@ export interface ReviewData {
   text: string;
   createdAt: string;
 }
+
+export interface NewReview {
+  rating: number;
+  text: string;
+}

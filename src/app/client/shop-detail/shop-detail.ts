@@ -3,10 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { EventEmitter } from 'stream';
 import { environment } from '../../environments/environment';
 import { ReviewData } from '../../../types/api';
 import { Reviews } from '../../composant/reviews/reviews';
+import { AuthService } from '../../../services/auth.service';
 
 interface Category {
   code: string;
@@ -34,6 +34,11 @@ export interface Shop {
   rooms: string[];
 }
 
+export interface ShopAPI  {
+  canAddReview: boolean;
+  shop: Shop;
+}
+
 @Component({
   selector: 'app-shop-detail',
   standalone: true,
@@ -49,8 +54,9 @@ export class ShopDetail implements OnInit {
   
   private http = inject(HttpClient);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private authService = inject(AuthService);
 
-  constructor(private router: Router) {}
 
   reviews: ReviewData[] = [
     {
@@ -73,9 +79,8 @@ export class ShopDetail implements OnInit {
       let shopId = params['id'];
       if (shopId) {
         this.getShop(shopId).subscribe({
-          next: (shop) => this.shopSubject.next(shop),
+          next: (shop) => this.shopSubject.next(shop.shop),
           error: (err) => {
-            alert('Erreur lors du chargement de la boutique');
             this.router.navigate(['/shop']);
           }
         });
@@ -83,8 +88,8 @@ export class ShopDetail implements OnInit {
     });
   }
 
-  getShop(id: string): Observable<Shop> {
-    return this.http.get<Shop>(`${environment.baseUrl}/shops/${id}`);
+  getShop(id: string): Observable<ShopAPI> {
+    return this.http.get<ShopAPI>(`${environment.baseUrl}/shops/${id}`);
   }
 
   editShop(): void {
