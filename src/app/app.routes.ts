@@ -53,6 +53,14 @@ export const routes: Routes = [
     loadComponent: () => 
       import('./boutique/create-boutique/create-boutique').then(m => m.CreateBoutique) 
   },
+  { path: 'boutique/products',
+    loadComponent: () => 
+      import('./boutique/product/product-list').then(m => m.ProductList) 
+  },
+  { path: 'boutique/products/create',
+    loadComponent: () => 
+      import('./boutique/create-product/create-product').then(m => m.CreateProduct) 
+  },
   {
     path: '',
     redirectTo: 'login',

@@ -6,6 +6,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../../../services/auth.service';
 import { Shop } from '../../../types/api';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-boutique',
@@ -25,7 +26,7 @@ export class CreateBoutique implements OnInit {
   private shopSubject = new BehaviorSubject<Shop[]>([]);
   shops$ = this.shopSubject.asObservable();
 
-  constructor(private fb: FormBuilder, private http: HttpClient, private authService: AuthService) {}
+  constructor(private fb: FormBuilder, private http: HttpClient, private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
     this.boutiqueForm = this.fb.group({
@@ -124,5 +125,9 @@ export class CreateBoutique implements OnInit {
   private fetchShops(): Observable<Shop[]> {
     const id = this.authService.getUserId();
     return this.http.get<Shop[]>(`${environment.baseUrl}/shops/user/${id}`);
+  }
+
+  viewProducts(shopId: string): void {
+    this.router.navigate(['/boutique/products'], { queryParams: { shopId } });
   }
 }
