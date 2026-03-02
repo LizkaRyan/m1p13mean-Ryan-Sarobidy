@@ -61,6 +61,10 @@ export const routes: Routes = [
     loadComponent: () => 
       import('./boutique/create-product/create-product').then(m => m.CreateProduct) 
   },
+  { path: 'boutique/request-events',
+    loadComponent: () => 
+      import('./boutique/request-event/request-event').then(m => m.RequestEventPage) 
+  },
   {
     path: '',
     redirectTo: 'login',
@@ -85,5 +89,5 @@ export const routes: Routes = [
     path: 'shop/:id/products',
     loadComponent: () =>
       import('./client/products/products').then(m => m.Products)
-  }
+  },
 ];
