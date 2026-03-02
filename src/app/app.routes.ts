@@ -80,6 +80,10 @@ export const routes: Routes = [
     path: 'shop/:id',
     loadComponent: () =>
       import('./client/shop-detail/shop-detail').then(m => m.ShopDetail)
+  },
+  {
+    path: 'shop/:id/products',
+    loadComponent: () =>
+      import('./client/products/products').then(m => m.Products)
   }
-
 ];
