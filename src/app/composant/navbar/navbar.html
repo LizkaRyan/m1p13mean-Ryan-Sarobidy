@@ -1,0 +1,90 @@
+<nav class="bg-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <!-- Logo et nom -->
+            <div class="flex items-center">
+                <a href="#" class="flex items-center space-x-3">
+                    <svg class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <span class="text-xl font-bold text-gray-800">CenterHub</span>
+                </a>
+            </div>
+
+            <!-- Menu desktop -->
+            <div class="hidden md:flex md:items-center md:space-x-8">
+                <div *ngFor="let item of menuItems">
+                    <a [routerLink]="item.route"
+                        class="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors">
+                        {{item.label}}
+                    </a>
+                </div>
+
+                <!-- Notifications -->
+                <div class="relative">
+                    <button (click)="toggleNotifications()"
+                        class="relative p-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-100 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <ng-icon name="bell" size="24"></ng-icon>
+                        <span *ngIf="(unreadCount$ | async) > 0"
+                            class="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full">
+                            {{ (unreadCount$ | async) }}
+                        </span>
+                    </button>
+
+                    <!-- Dropdown notifications -->
+                    <div *ngIf="isNotificationsOpen"
+                        class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50 overflow-hidden">
+                        <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
+                            <h3 class="text-sm font-bold text-gray-800">Notifications</h3>
+                        </div>
+                        <ng-container *ngIf="notifications$ | async as notifications">
+                            <div class="max-h-96 overflow-y-auto">
+                                <div *ngIf="notifications.length === 0" class="px-4 py-8 text-center text-gray-500">
+                                    <ng-icon name="bell-off" size="32" class="mx-auto mb-2 text-gray-400"></ng-icon>
+                                    <p class="text-sm">Aucune notification</p>
+                                </div>
+
+                                <div *ngFor="let notification of notifications" (click)="navigateToNotification(notification)"
+                                    class="block px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100"
+                                    [class.bg-blue-50]="!notification.read">
+                                    <div class="flex items-start gap-3">
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium text-gray-900"
+                                                [class.font-bold]="!notification.read">
+                                                {{ notification.type.label }}
+                                            </p>
+                                            <p class="text-xs text-gray-600 mt-1">
+                                                {{ notification.message }}
+                                            </p>
+                                            <p class="text-xs text-gray-400 mt-1">
+                                                {{ getTimeAgo(notification.createdAt) }}
+                                            </p>
+                                        </div>
+                                        <div *ngIf="!notification.read" class="flex-shrink-0">
+                                            <span class="w-2 h-2 bg-indigo-600 rounded-full inline-block"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div *ngIf="notifications.length > 0" class="px-4 py-3 border-t border-gray-200 bg-gray-50">
+                                <button (click)="seeMore()"
+                                    class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+                                    Voir plus
+                                </button>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+
+                <div>
+                    <button (click)="logout()"
+                        class="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors cursor-pointer">
+                        <ng-icon name="logout" size="20"></ng-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

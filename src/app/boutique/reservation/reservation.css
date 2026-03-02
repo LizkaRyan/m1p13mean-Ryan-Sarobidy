@@ -1,0 +1,31 @@
+.custom-alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 250px;
+  z-index: 1000;
+  animation: slideIn 0.4s ease-out;
+  font-family: Arial, sans-serif;
+}
+
+.custom-alert.success { background-color: #28a745; }
+.custom-alert.error   { background-color: #dc3545; }
+
+.custom-alert .close-btn {
+  margin-left: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
