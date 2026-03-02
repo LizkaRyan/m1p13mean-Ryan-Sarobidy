@@ -21,6 +21,7 @@ export class Reviews implements OnInit {
   @Input() reviews: ReviewData[] = [];
   @Input() shopId?: string;
   @Input() canAddReview: boolean = true;
+  @Input() addReview: (data: NewReview) => void;
   Math = Math;
   private http = inject(HttpClient);
 
@@ -63,24 +64,10 @@ export class Reviews implements OnInit {
 
       this.addReview(data);
 
-      // Reset form after submission
-      /*setTimeout(() => {
-        this.reviewForm.reset({ rating: 0, text: '' });
-        this.hoveredRating = 0;
-        this.isSubmitting = false;
-      }, 500)*/;
+      this.reviewForm.reset({ rating: 0, text: '' });
+      this.hoveredRating = 0;
+      this.isSubmitting = false;
     }
-  }
-
-  addReview(review: NewReview): void {
-    this.postReview(review).subscribe({
-      next: (newReview) => {
-        this.reviews.push(newReview);
-      },
-      error: (err) => {
-        alert('Erreur lors de l\'ajout de l\'avis');
-      }
-    });
   }
 
   postReview(data: NewReview): Observable<ReviewData> {

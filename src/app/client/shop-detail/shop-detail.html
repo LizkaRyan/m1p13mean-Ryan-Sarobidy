@@ -59,7 +59,7 @@
       </div>
     </div>
 
-    <app-reviews [reviews]="reviews" [shopId]="shop._id" [canAddReview]="canAddReview$ | async" />
+    <app-reviews [reviews]="reviews$ | async" [shopId]="shop._id" [canAddReview]="canAddReview$ | async" [addReview]="addReview.bind(this)" />
 
     <!-- Actions
     <div *ngIf="showActions" class="flex gap-2 pt-4 border-t-2 border-slate-100">
