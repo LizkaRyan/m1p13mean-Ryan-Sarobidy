@@ -118,3 +118,30 @@ export interface Reservation {
   roomId: RoomReservation;
   dateMax: string;
 }
+
+export interface ProductPhoto {
+    _id: string;
+    url: string;
+    createdAt: string;
+    type: {
+        code: string;
+        label: string;
+    };
+}
+
+export interface Product {
+    _id: string;
+    name: string;
+    unityPrice: number;
+    category: {
+        code: string;
+        label: string;
+    };
+    shopId: string;
+    description?: string;
+    status: {
+        code: string;
+        label: string;
+    };
+    photos: ProductPhoto[];
+}
