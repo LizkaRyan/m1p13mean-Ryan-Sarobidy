@@ -5,6 +5,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { EventEmitter } from 'stream';
 import { environment } from '../../environments/environment';
+import { ReviewData } from '../../../types/api';
+import { Reviews } from '../../composant/reviews/reviews';
 
 interface Category {
   code: string;
@@ -35,7 +37,7 @@ export interface Shop {
 @Component({
   selector: 'app-shop-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, Reviews],
   templateUrl: './shop-detail.html',
   styleUrl: './shop-detail.css',
 })
@@ -49,6 +51,22 @@ export class ShopDetail implements OnInit {
   private route = inject(ActivatedRoute);
 
   constructor(private router: Router) {}
+
+  reviews: ReviewData[] = [
+    {
+      _id: "1",
+      userId: {
+        _id: "user1",
+        name: "Jean Dupont",
+        email: "jean@test.com",
+        role: {code:"CUSTOMER", label:"Client"},
+      },
+      shopId: "shop1",
+      rating: 5,
+      text: "Excellent service !",
+      createdAt: "2026-01-15T10:30:00.000Z"
+    }
+  ];
 
   ngOnInit() {
     this.route.params.subscribe(params => {
