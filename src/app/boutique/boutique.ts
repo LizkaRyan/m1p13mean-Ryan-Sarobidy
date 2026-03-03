@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { NgIcon, NgIconComponent, provideIcons } from '@ng-icons/core';
+import { provideIcons } from '@ng-icons/core';
 import { lucideBuilding } from '@ng-icons/lucide';
 
 @Component({
@@ -9,7 +9,7 @@ import { lucideBuilding } from '@ng-icons/lucide';
   templateUrl: './boutique.html',
   styleUrls: ['./boutique.css'],
   standalone: true,
-  imports: [CommonModule, RouterModule, NgIconComponent],
+  imports: [CommonModule, RouterModule],
   providers: [provideIcons({ building: lucideBuilding})],
 })
 export class Boutique {}

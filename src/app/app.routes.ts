@@ -61,6 +61,10 @@ export const routes: Routes = [
     loadComponent: () => 
       import('./boutique/create-product/create-product').then(m => m.CreateProduct) 
   },
+  { path: 'boutique/reviews',
+    loadComponent: () => 
+      import('./boutique/review-list/review-list').then(m => m.ReviewList) 
+  },
   {
     path: '',
     redirectTo: 'login',

@@ -1,0 +1,43 @@
+<div class="review-container">
+
+  <div class="review-header">
+    <div>
+      <h1>Avis clients</h1>
+      <p class="review-subtitle">Les avis laissés sur vos boutiques</p>
+    </div>
+  </div>
+
+  <ng-container *ngIf="reviews$ | async as reviews">
+
+    <div *ngIf="!reviews.length" class="empty-state">
+      <h3>Aucun avis pour le moment</h3>
+      <p>Les avis de vos clients apparaîtront ici.</p>
+    </div>
+
+    <div *ngIf="reviews.length" class="reviews-list">
+      <div *ngFor="let review of reviews" class="review-row">
+
+        <div class="reviewer-avatar">
+          {{ review.userId?.name?.charAt(0)?.toUpperCase() ?? '?' }}
+        </div>
+
+        <div class="review-body">
+          <div class="review-top">
+            <span class="reviewer-name">{{ review.userId?.name ?? 'Anonyme' }}</span>
+            <span class="review-shop-tag">{{ review.shopId?.name }}</span>
+            <div class="review-stars">
+              <span *ngFor="let star of getStars(review.rating)"
+                [ngClass]="star <= review.rating ? 'star-filled' : 'star-empty'">★</span>
+              <span class="rating-number">{{ review.rating }}/5</span>
+            </div>
+            <span class="review-date">{{ formatDate(review.createdAt) }}</span>
+          </div>
+          <p class="review-text" *ngIf="review.text">{{ review.text }}</p>
+          <p class="review-text no-text" *ngIf="!review.text">Aucun commentaire</p>
+        </div>
+
+      </div>
+    </div>
+
+  </ng-container>
+</div>
