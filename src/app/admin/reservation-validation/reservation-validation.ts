@@ -8,7 +8,7 @@ import {
 } from '@ng-icons/lucide';
 import { provideIcons, NgIconComponent } from '@ng-icons/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, shareReplay } from 'rxjs';
+import { BehaviorSubject, Observable, shareReplay } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 interface Category {
@@ -67,15 +67,17 @@ interface ReservationRequest {
   providers: [provideIcons({ box: lucideBox, empty: lucideMailbox, valider: lucideCheck, rejeter: lucideX })]
 })
 export class ReservationValidation implements OnInit {
-  reservations$!: Observable<ReservationRequest[]>;
+  reservationsSubject = new BehaviorSubject<ReservationRequest[]>([]);
+  reservations$ = this.reservationsSubject.asObservable();
   processingId: string | null = null;
 
   constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
-    this.reservations$ = this.getReservation().pipe(
-      shareReplay(1)
-    );
+    this.getReservation().subscribe({
+      next: (reservations) => this.reservationsSubject.next(reservations),
+      error: (err) => console.error(err)
+    });
   }
 
   getReservation(): Observable<ReservationRequest[]> {
@@ -89,7 +91,10 @@ export class ReservationValidation implements OnInit {
   approveReservation(reservationId: string): void {
     this.processingId = reservationId;
     if (confirm('Êtes-vous sûr d\'approuver cette demande ?')) {
-      this.reservations$ = this.patchReservation(reservationId, true);
+      this.patchReservation(reservationId, true).subscribe({
+        next: (reservations) => this.reservationsSubject.next(reservations),
+        error: (err) => console.error(err)
+      });
     }
   }
 
