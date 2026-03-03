@@ -95,8 +95,8 @@ export class InsertionRoom implements OnInit {
       }
 
       this.boxForm.reset({
-        floor: 1,
-        capacity: 1,
+        floor: 0,
+        capacity: 0,
         rentPrice: 0,
         length: 0,
         height: 0,
