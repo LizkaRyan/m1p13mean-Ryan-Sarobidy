@@ -96,6 +96,10 @@ export class RequestEventPage implements OnInit {
     if (event.shopId) {
       name = " - " + event.shopId.name;
     }
+    let status = "REQUEST";
+    if (color === '#22C55E') {
+      status = "EVENT";
+    }
     return {
       title: event.title + name,
       start: event.startDate,
@@ -108,7 +112,8 @@ export class RequestEventPage implements OnInit {
         startDate: event.startDate,
         endDate: event.endDate,
         title: event.title,
-        id: event._id
+        id: event._id,
+        status: status
       }
     }
   }
@@ -142,14 +147,40 @@ export class RequestEventPage implements OnInit {
         color: this.boxForm.value.color,
         createdAt: new Date().toISOString()
       }
-      this.postRequestEvent(eventData).subscribe({
-        next: (events) => {
-          this.changeEvents(events);
-          this.reservationsSubject.next(events.requests);
-        },
-        error: (err) => console.error('Erreur lors de la création de l\'événement:', err)
-      });
+
+      if (this.boxForm.value._id) {
+        this.patchEvent(eventData).subscribe({
+          next: (events) => {
+            this.changeEvents(events);
+          },
+          error: (error) => console.error('Erreur lors de la soumission du formulaire:', error)
+        });
+      }
+      else {
+        this.postRequestEvent(eventData).subscribe({
+          next: (events) => {
+            this.changeEvents(events);
+            this.reservationsSubject.next(events.requests);
+          },
+          error: (err) => console.error('Erreur lors de la création de l\'événement:', err)
+        });
+      }
+      this.cancel();
     }
+  }
+
+  patchEvent(event: any): Observable<EventAndRequest> {
+    return this.http.patch<EventAndRequest>(`${environment.baseUrl}/requests-event/${this.boxForm.value._id}`, event);
+  }
+
+  delete(): void {
+    this.patchEvent({deletedAt: new Date().toISOString()}).subscribe({
+      next: (events) => {
+        this.changeEvents(events);
+      },
+      error: (error) => console.error('Erreur lors de la suppression de l\'événement:', error)
+    })
+    this.cancel();
   }
 
   cancel(): void {
@@ -214,8 +245,21 @@ export class RequestEventPage implements OnInit {
   }
 
   eventClick(info) {
-    this.searchTerm$.next(info.event.extendedProps.title);
-    this.searchTerm = info.event.extendedProps.title;
+    if (info.event.extendedProps.status === 'REQUEST') {
+      const start = info.event.extendedProps.startDate.includes('T') ? info.event.extendedProps.startDate.slice(0, 16) : `${info.event.extendedProps.startDate}T00:00`;
+      const end = info.event.extendedProps.endDate
+        ? (info.event.extendedProps.endDate.includes('T') ? info.event.extendedProps.endDate.slice(0, 16) : `${info.event.extendedProps.endDate}T00:00`)
+        : '';
+      this.boxForm.patchValue({
+        _id: info.event.extendedProps.id,
+        title: info.event.title,
+        startDate: start,
+        endDate: end,
+        description: info.event.extendedProps.description,
+        themes: info.event.extendedProps.themes.join(', '),
+        color: info.event.backgroundColor
+      });
+    }
   }
 
   getRequestsAndEvent(status, year): Observable<EventAndRequest> {
