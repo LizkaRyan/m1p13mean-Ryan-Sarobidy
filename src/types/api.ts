@@ -12,13 +12,24 @@ export interface Role {
     label: string;
 }
 
+export interface ShopPhoto {
+    _id: string;
+    url: string;
+    createdAt: string;
+    type: {
+        code: string;
+        label: string;
+    };
+}
+
 export interface Shop {
     _id: string;
     name: string;
     category: {
         code: string;
         label: string;
-    }
+    };
+    photos: ShopPhoto[];
 }
 
 export interface LoginResponse {
@@ -110,6 +121,7 @@ interface ShopReservation {
 interface RoomReservation {
   _id: string;
   name: string;
+  floor: number;
 }
 
 export interface Reservation {

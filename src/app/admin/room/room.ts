@@ -29,14 +29,14 @@ export class RoomPage implements OnInit {
 
   initForm(): void {
     this.boxForm = this.fb.group({
-      name: ['Box 3', Validators.required],
-      rentPrice: [132000, [Validators.required, Validators.min(0)]],
+      name: ['', Validators.required],
+      rentPrice: [0, [Validators.required, Validators.min(0)]],
       statusCode: ['AVAILABLE', Validators.required],
       floor: [1, [Validators.required, Validators.min(0)]],
-      capacity: [25, [Validators.required, Validators.min(1)]],
-      length: [10, [Validators.required, Validators.min(0)]],
-      height: [3, [Validators.required, Validators.min(0)]],
-      width: [5, [Validators.required, Validators.min(0)]]
+      capacity: [0, [Validators.required, Validators.min(1)]],
+      length: [0, [Validators.required, Validators.min(0)]],
+      height: [0, [Validators.required, Validators.min(0)]],
+      width: [0, [Validators.required, Validators.min(0)]]
     });
   }
 

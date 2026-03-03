@@ -1,0 +1,245 @@
+.review-container {
+  width: 100%;
+  min-height: 100vh;
+  padding: 2.5rem 2rem;
+  background: linear-gradient(135deg, #f8faff 0%, #eef2ff 100%);
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* HEADER */
+.review-header {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border-radius: 24px;
+  padding: 2.5rem 3rem;
+  margin-bottom: 2rem;
+  color: white;
+}
+
+.review-header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 0.4rem;
+}
+
+.review-subtitle {
+  color: rgba(255,255,255,0.75);
+  font-size: 0.95rem;
+}
+
+/* EMPTY */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 20px;
+  border: 1px solid #e0e7ff;
+}
+
+.empty-state h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p { color: #94a3b8; font-size: 0.9rem; }
+
+/* LIST */
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e0e7ff;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.06);
+}
+
+/* ROW */
+.review-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 1.25rem 1.75rem;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s;
+}
+
+.review-row:last-child { border-bottom: none; }
+
+.review-row:hover { background: #fafbff; }
+
+/* AVATAR */
+.reviewer-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* BODY */
+.review-body { flex: 1; }
+
+.review-top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.reviewer-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #1e293b;
+}
+
+.review-shop-tag {
+  background: #ede9fe;
+  color: #5b21b6;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.review-stars {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.star-filled { color: #f59e0b; font-size: 1rem; }
+.star-empty  { color: #e2e8f0; font-size: 1rem; }
+
+.rating-number {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+  margin-left: 0.3rem;
+}
+
+.review-date {
+  font-size: 0.75rem;
+  color: #212222;
+  margin-left: auto;
+}
+
+.review-text {
+  font-size: 0.88rem;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.no-text {
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .review-header { padding: 2rem; }
+  .review-top { flex-direction: column; align-items: flex-start; }
+  .review-date { margin-left: 0; }
+}
+
+/* FILTER TOGGLE */
+.filter-toggle-btn {
+  background: rgba(255,255,255,0.2);
+  border: 1.5px solid rgba(255,255,255,0.35);
+  color: white;
+  border-radius: 12px;
+  padding: 0.6rem 0.9rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.filter-toggle-btn:hover,
+.filter-toggle-btn.active {
+  background: rgba(255,255,255,0.35);
+}
+
+/* FILTER PANEL */
+.filter-panel {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e0e7ff;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.08);
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.filter-field label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.filter-field input,
+.filter-field select {
+  padding: 0.55rem 0.9rem;
+  border: 2px solid #e0e7ff;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  color: #1e293b;
+  outline: none;
+  transition: border-color 0.2s;
+  background: white;
+}
+
+.filter-field input:focus,
+.filter-field select:focus {
+  border-color: #6366f1;
+}
+
+.filter-reset {
+  justify-content: flex-end;
+}
+
+.btn-reset {
+  padding: 0.55rem 1.2rem;
+  background: #f1f5f9;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-reset:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}

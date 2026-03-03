@@ -262,3 +262,103 @@
 .btn-products:hover {
   background-color: #4f46e5;
 }
+
+.upload-zone {
+  border: 2px dashed #c7d2fe;
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.upload-zone:hover { border-color: #6366f1; background-color: #eef2ff; }
+.upload-placeholder { text-align: center; }
+.preview-img { width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; }
+.preview-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; width: 100%; }
+.preview-thumb { position: relative; width: 80px; height: 80px; }
+.preview-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+.remove-thumb {
+  position: absolute; top: -6px; right: -6px;
+  background: #dc3545; color: white; border: none;
+  border-radius: 50%; width: 20px; height: 20px;
+  font-size: 0.75rem; cursor: pointer; font-weight: bold;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.btn-photos {
+  padding: 0.35rem 0.6rem;
+  background-color: #eff6ff;
+  border: 1px solid #93c5fd;
+  color: #2563eb;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.2s ease;
+}
+.btn-photos:hover { background-color: #dbeafe; }
+.btn-photos:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.modal-gallery { max-width: 650px; }
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.close-modal {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #64748b;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.close-modal:hover { color: #1e293b; }
+
+.modal-main-img {
+  width: 100%;
+  height: 300px;
+  background: #f1f5f9;
+  overflow: hidden;
+}
+.modal-main-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.modal-thumbs {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  overflow-x: auto;
+}
+.thumb-item {
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  flex-shrink: 0;
+  transition: border-color 0.2s;
+}
+.thumb-item img { width: 100%; height: 100%; object-fit: cover; }
+.thumb-item.active { border-color: #6366f1; }
+.thumb-item:hover { border-color: #a5b4fc; }
+
+.upload-zone-sm {
+  min-height: 90px;
+  padding: 0.75rem;
+}
+
+.icon-upload {
+  font-size: 1.8rem;
+  color: #a5b4fc;
+}

@@ -1,0 +1,95 @@
+<div class="review-container">
+
+  <!-- HEADER -->
+  <div class="review-header">
+  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+    <div>
+      <h1>Avis clients</h1>
+      <p class="review-subtitle">Les avis laissés sur vos boutiques</p>
+    </div>
+    <button class="filter-toggle-btn" (click)="showFilterPanel = !showFilterPanel" [class.active]="showFilterPanel">
+      <ng-icon name="filter"></ng-icon>
+    </button>
+  </div>
+</div>
+
+  <!-- PANEL FILTRE -->
+  <div class="filter-panel" *ngIf="showFilterPanel">
+    <div class="filter-grid">
+
+      <div class="filter-field">
+        <label>Email client</label>
+        <input type="text" [(ngModel)]="filterEmail" (ngModelChange)="onFilterChange()" placeholder="Rechercher...">
+      </div>
+
+      <div class="filter-field">
+        <label>Boutique</label>
+        <select [(ngModel)]="filterShop" (ngModelChange)="onFilterChange()">
+            <option value="">Toutes</option>
+            <option *ngFor="let shop of shops$ | async" [value]="shop.name">{{ shop.name }}</option>
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label>Note</label>
+        <select [(ngModel)]="filterRating" (ngModelChange)="onFilterChange()">
+          <option [ngValue]="null">Toutes</option>
+          <option [ngValue]="5">★★★★★ (5)</option>
+          <option [ngValue]="4">★★★★ (4)</option>
+          <option [ngValue]="3">★★★ (3)</option>
+          <option [ngValue]="2">★★ (2)</option>
+          <option [ngValue]="1">★ (1)</option>
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label>Du</label>
+        <input type="date" [(ngModel)]="filterDateFrom" (ngModelChange)="onFilterChange()">
+      </div>
+
+      <div class="filter-field">
+        <label>Au</label>
+        <input type="date" [(ngModel)]="filterDateTo" (ngModelChange)="onFilterChange()">
+      </div>
+
+      <div class="filter-field filter-reset">
+        <button class="btn-reset" (click)="resetFilters()">Réinitialiser</button>
+      </div>
+
+    </div>
+  </div>
+
+  <ng-container *ngIf="reviews$ | async as reviews">
+
+    <div *ngIf="!reviews.length" class="empty-state">
+      <h3>Aucun avis pour le moment</h3>
+      <p>Les avis de vos clients apparaîtront ici.</p>
+    </div>
+
+    <div *ngIf="reviews.length" class="reviews-list">
+      <div *ngFor="let review of reviews" class="review-row">
+
+        <div class="reviewer-avatar">
+          {{ review.userId?.email?.charAt(0)?.toUpperCase() ?? '?' }}
+        </div>
+
+        <div class="review-body">
+          <div class="review-top">
+            <span class="reviewer-name">{{ review.userId?.email ?? 'Anonyme' }}</span>
+            <span class="review-shop-tag">{{ review.shopId?.name }}</span>
+            <div class="review-stars">
+              <span *ngFor="let star of getStars(review.rating)"
+                [ngClass]="star <= review.rating ? 'star-filled' : 'star-empty'">★</span>
+              <span class="rating-number">{{ review.rating }}/5</span>
+            </div>
+            <span class="review-date">{{ formatDate(review.createdAt) }}</span>
+          </div>
+          <p class="review-text" *ngIf="review.text">{{ review.text }}</p>
+          <p class="review-text no-text" *ngIf="!review.text">Aucun commentaire</p>
+        </div>
+
+      </div>
+    </div>
+
+  </ng-container>
+</div>

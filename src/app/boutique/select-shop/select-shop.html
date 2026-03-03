@@ -7,7 +7,7 @@
   </div>
 
   <div *ngIf="successMessage" class="alert-success">
-    ✅ {{ successMessage }}
+    {{ successMessage }}
     <span class="close-btn" (click)="successMessage = null">×</span>
   </div>
 
@@ -73,5 +73,7 @@
 
   <ng-template #noData>
     <div class="empty-state">
-      <div class="empty-icon">🏪</div>
-      <p>Aucune boutique dispon
+      <div class="empty-icon"><ng-icon name="building" class="text-4xl text-slate-400"></ng-icon></div>
+      <p>Aucune boutique disponible</p>
+    </div>
+  </ng-template>

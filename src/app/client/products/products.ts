@@ -1,32 +1,30 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment';
+import { Component } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Product } from '../../../types/api';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
-import { lucideImage, lucidePackage } from '@ng-icons/lucide';
+import { lucideMailbox } from '@ng-icons/lucide';
 
 @Component({
-  selector: 'app-product-list',
-  templateUrl: './product-list.html',
-  styleUrls: ['./product-list.css'],
+  selector: 'app-products',
   standalone: true,
-  imports: [CommonModule, NgIconComponent],
-  providers: [provideIcons({ cardboard: lucidePackage })]
-
+  imports: [CommonModule,NgIconComponent],
+  templateUrl: './products.html',
+  styleUrl: './products.css',
+  providers: [provideIcons({empty: lucideMailbox})]
 })
-export class ProductList implements OnInit {
-  private productSubject = new BehaviorSubject<Product[]>([]);
+export class Products {
+private productSubject = new BehaviorSubject<Product[]>([]);
   products$ = this.productSubject.asObservable();
-
+  
   baseUrl = environment.baseUrl;
   alertMessage: string | null = null;
   alertType: 'success' | 'error' = 'error';
   currentShopId: string | null = null;
 
-  // Galerie
   selectedProduct: Product | null = null;
   activePhotoIndex = 0;
 
@@ -34,7 +32,7 @@ export class ProductList implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      const shopId = params['shopId'];
+      const shopId = params['id'];
       this.currentShopId = shopId ?? null;
       if (shopId) {
         this.fetchProductsByShop(shopId);
