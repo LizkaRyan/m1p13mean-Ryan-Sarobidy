@@ -8,7 +8,7 @@ import {
 } from '@ng-icons/lucide';
 import { provideIcons, NgIconComponent } from '@ng-icons/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, shareReplay } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 interface Category {
@@ -73,7 +73,9 @@ export class ReservationValidation implements OnInit {
   constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
-    this.reservations$ = this.getReservation();
+    this.reservations$ = this.getReservation().pipe(
+      shareReplay(1)
+    );
   }
 
   getReservation(): Observable<ReservationRequest[]> {
