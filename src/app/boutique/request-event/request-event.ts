@@ -291,12 +291,12 @@ export class RequestEventPage implements OnInit {
   initForm(): void {
     this.boxForm = this.fb.group({
       _id: [null],
-      title: ['Halloween Party', Validators.required],
+      title: ['', Validators.required],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
-      themes: ['Friandises, Costumes', Validators.required],
-      description: ['Faites peur!', Validators.required],
-      color: ['#fa652f', Validators.required]
+      themes: ['', Validators.required],
+      description: ['', Validators.required],
+      color: ['#000000', Validators.required]
     });
   }
 }

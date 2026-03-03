@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
     <!-- Header avec design léger -->
-    <div class="container mx-auto px-4 py-8">
+    <div *ngIf="reservations$ | async as reservations" class="container mx-auto px-4 py-8">
         <div class="mb-10">
             <h1
                 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 mb-2">
@@ -10,14 +10,14 @@
 
         <div class="container mx-auto">
             <!-- Section En Attente -->
-            <div *ngIf="(reservations$ | async)?.length > 0" class="mb-12">
+            <div *ngIf="reservations.length > 0" class="mb-12">
                 <h2 class="text-2xl font-black text-amber-600 mb-6 flex items-center gap-3">
                     <span class="w-2 h-8 bg-gradient-to-b from-amber-500 to-orange-500 rounded-full"></span>
                     EN ATTENTE D'APPROBATION
                 </h2>
 
                 <div class="grid gap-6">
-                    <div *ngFor="let reservation of reservations$ | async; let i = index"
+                    <div *ngFor="let reservation of reservations; let i = index"
                         class="group relative bg-white border-2 border-amber-200 rounded-3xl overflow-hidden hover:border-amber-400 hover:shadow-2xl transition-all duration-500">
 
                         <!-- Effet lumineux au survol -->
@@ -175,7 +175,7 @@
             </div>
 
             <!-- Message si aucune demande -->
-            <div *ngIf="(reservations$ | async)?.length === 0" class="text-center py-20">
+            <div *ngIf="reservations.length === 0" class="text-center py-20">
                 <div class="text-8xl mb-6"><ng-icon name="empty" size="48"></ng-icon></div>
                 <h3 class="text-3xl font-black text-slate-800 mb-3">Aucune demande</h3>
                 <p class="text-slate-600 text-lg">Il n'y a aucune demande de réservation pour le moment</p>
