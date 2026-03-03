@@ -1,6 +1,5 @@
 <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden top-8">
 
-  <!-- HEADER -->
   <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6">
     <h2 class="text-2xl font-bold text-white" style="text-align: center;">
       {{ editingIndex !== null ? 'Modifier la Boutique' : 'Nouvelle Boutique' }}
@@ -8,60 +7,95 @@
   </div>
 
   <div *ngIf="successMessage" class="alert-success mx-8 mt-4">
-    ✅ {{ successMessage }}
+    {{ successMessage }}
     <span class="close-btn" (click)="successMessage = null">×</span>
   </div>
 
   <form *ngIf="boutiqueForm" [formGroup]="boutiqueForm" (ngSubmit)="onSubmit()" class="p-8 space-y-6">
 
-    <!-- Nom -->
-    <div class="form-group">
-      <label class="block text-sm font-semibold text-slate-700 mb-2">Nom de la boutique</label>
-      <input
-        type="text"
-        formControlName="name"
-        class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none">
-      <div *ngIf="boutiqueForm.get('name')?.invalid && boutiqueForm.get('name')?.touched"
-        class="text-red-500 text-sm mt-1">
-        Le nom est requis
+    <div class="grid grid-cols-2 gap-4">
+
+  <div>
+    <label class="block text-sm font-semibold text-slate-700 mb-2">Nom de la boutique</label>
+    <input type="text" formControlName="name"
+      class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none">
+    <div *ngIf="boutiqueForm.get('name')?.invalid && boutiqueForm.get('name')?.touched"
+      class="text-red-500 text-sm mt-1">Le nom est requis</div>
+  </div>
+
+  <div>
+    <label class="block text-sm font-semibold text-slate-700 mb-2">Catégorie</label>
+    <select formControlName="category"
+      class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none bg-white">
+      <option [ngValue]="null" disabled>Choisir</option>
+      <option *ngFor="let cat of categories" [ngValue]="cat">{{ cat.label }}</option>
+    </select>
+    <div *ngIf="boutiqueForm.get('category')?.invalid && boutiqueForm.get('category')?.touched"
+      class="text-red-500 text-sm mt-1">La catégorie est requise</div>
+  </div>
+
+</div>
+
+    <!-- Extérieur + Intérieur côte à côte -->
+<div class="grid grid-cols-2 gap-4">
+
+  <div>
+    <label class="block text-sm font-semibold text-slate-700 mb-2">
+      <ng-icon name="exterior" class="inline mr-1"></ng-icon> Extérieure
+    </label>
+    <div class="upload-zone upload-zone-sm" (click)="exteriorInput.click()" (dragover)="$event.preventDefault()" (drop)="onExteriorDrop($event)">
+      <input #exteriorInput type="file" accept="image/*" class="hidden" (change)="onExteriorChange($event)">
+      <div *ngIf="!exteriorPreview" class="upload-placeholder">
+        <ng-icon name="exterior" class="icon-upload"></ng-icon>
+        <p class="text-slate-400 text-xs mt-1">Cliquer ou glisser</p>
+      </div>
+      <img *ngIf="exteriorPreview" [src]="exteriorPreview" class="preview-img" alt="Extérieur">
+    </div>
+  </div>
+
+  <div>
+    <label class="block text-sm font-semibold text-slate-700 mb-2">
+      <ng-icon name="interior" class="inline mr-1"></ng-icon> Intérieure
+    </label>
+    <div class="upload-zone upload-zone-sm" (click)="interiorInput.click()" (dragover)="$event.preventDefault()" (drop)="onInteriorDrop($event)">
+      <input #interiorInput type="file" accept="image/*" class="hidden" (change)="onInteriorChange($event)">
+      <div *ngIf="!interiorPreview" class="upload-placeholder">
+        <ng-icon name="interior" class="icon-upload"></ng-icon>
+        <p class="text-slate-400 text-xs mt-1">Cliquer ou glisser</p>
+      </div>
+      <img *ngIf="interiorPreview" [src]="interiorPreview" class="preview-img" alt="Intérieur">
+    </div>
+  </div>
+
+</div>
+
+<!-- Photos diverses compactes -->
+<div>
+  <label class="block text-sm font-semibold text-slate-700 mb-2">
+    <ng-icon name="camera" class="inline mr-1"></ng-icon> Photos diverses
+  </label>
+  <div class="upload-zone upload-zone-sm" (click)="diversInput.click()">
+    <input #diversInput type="file" accept="image/*" multiple class="hidden" (change)="onDiversChange($event)">
+    <div *ngIf="!diversPreviews.length" class="upload-placeholder">
+      <ng-icon name="camera" class="icon-upload"></ng-icon>
+      <p class="text-slate-400 text-xs mt-1">Plusieurs images</p>
+    </div>
+    <div *ngIf="diversPreviews.length" class="preview-grid">
+      <div *ngFor="let preview of diversPreviews; let i = index" class="preview-thumb">
+        <img [src]="preview" alt="Photo {{ i+1 }}">
+        <button type="button" class="remove-thumb" (click)="removeDivers(i, $event)">×</button>
       </div>
     </div>
-
-    <!-- Catégorie -->
-    <div formGroupName="category" class="bg-slate-50 rounded-xl p-4 border-2 border-slate-200">
-      <h3 class="font-semibold text-slate-700 mb-4">Catégorie</h3>
-
-      <div class="form-group mb-4">
-        <label class="block text-sm font-semibold text-slate-700 mb-2">Code catégorie</label>
-        <input
-          type="text"
-          formControlName="code"
-          placeholder="Ex: MODE"
-          class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none">
-      </div>
-
-      <div class="form-group">
-        <label class="block text-sm font-semibold text-slate-700 mb-2">Libellé catégorie</label>
-        <input
-          type="text"
-          formControlName="label"
-          class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all outline-none">
-      </div>
-    </div>
+  </div>
+</div>
 
     <!-- Boutons -->
     <div class="flex gap-3 pt-4">
-      <button
-        type="submit"
-        [disabled]="boutiqueForm.invalid"
+      <button type="submit" [disabled]="boutiqueForm.invalid"
         class="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-3 px-6 rounded-xl hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl">
         {{ editingIndex !== null ? 'Mettre à jour' : 'Créer la boutique' }}
       </button>
-
-      <button
-        *ngIf="editingIndex !== null"
-        type="button"
-        (click)="cancelEdit()"
+      <button *ngIf="editingIndex !== null" type="button" (click)="cancelEdit()"
         class="px-6 py-3 border-2 border-slate-300 text-slate-700 font-semibold rounded-xl hover:bg-slate-50 transition-all">
         Annuler
       </button>
@@ -73,7 +107,6 @@
     <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 mt-6 mb-4" style="text-align: center;">
       Vos boutiques
     </h2>
-
     <ng-container *ngIf="shops$ | async as shops">
       <div class="table-card">
         <table class="data-table" *ngIf="shops.length > 0; else noData">
@@ -90,15 +123,12 @@
               <td><span class="badge">{{ shop.category?.label ?? shop.category }}</span></td>
               <td>
                 <div class="action-btns">
-                  <button class="btn-edit" title="Modifier" (click)="editShop(shop)">
-                    Modifier
+                  <button class="btn-products" (click)="viewProducts(shop._id)">Voir produits</button>
+                  <button class="btn-photos" (click)="openGallery(shop)">
+                    <ng-icon name="interior"></ng-icon>
                   </button>
-                  <button class="btn-products" (click)="viewProducts(shop._id)">
-                    Voir produits
-                  </button>
-                  <button class="btn-delete" title="Supprimer" (click)="deleteShop(shop)">
-                    Supprimer
-                  </button>
+                  <button class="btn-edit" (click)="editShop(shop)"><ng-icon name="edit"></ng-icon></button>
+                  <button class="btn-delete" (click)="deleteShop(shop)"><ng-icon name="delete"></ng-icon></button>
                 </div>
               </td>
             </tr>
@@ -106,27 +136,60 @@
         </table>
       </div>
     </ng-container>
-
     <ng-template #noData>
       <div class="empty-state">
-        <div class="empty-icon">🏪</div>
+        <div class="empty-icon"><ng-icon name="building" class="text-4xl text-slate-400"></ng-icon></div>
         <p>Aucune boutique disponible pour le moment.</p>
       </div>
     </ng-template>
   </div>
 
-  <ng-template #noData>
-    <p class="text-center text-slate-500 py-6">Aucune boutique disponible pour le moment.</p>
-  </ng-template>
+  <!-- MODALE GALERIE PHOTOS -->
+  <div *ngIf="selectedShop" class="modal-overlay" (click)="closeGallery()">
+    <div class="modal-box modal-gallery" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h3 class="text-lg font-bold text-slate-800">{{ selectedShop.name }} — Photos</h3>
+        <button (click)="closeGallery()" class="close-modal">×</button>
+      </div>
+
+      <!-- Tabs par type -->
+      <div class="flex border-b border-slate-200 mb-4">
+        <button *ngFor="let type of photoTypes"
+          (click)="activePhotoType = type.code"
+          class="flex-1 py-2 text-sm font-semibold transition-all"
+          [ngClass]="activePhotoType === type.code
+            ? 'text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50'
+            : 'text-slate-500 hover:text-slate-700'">
+          {{ type.label }} ({{ countPhotos(type.code) }})
+        </button>
+      </div>
+
+      <!-- Image principale -->
+      <div class="modal-main-img" *ngIf="filteredPhotos().length">
+        <img [src]="baseUrl + filteredPhotos()[activePhotoIndex].url" [alt]="selectedShop.name">
+      </div>
+      <div *ngIf="!filteredPhotos().length" class="text-center py-8 text-slate-400">
+        Aucune photo pour ce type
+      </div>
+
+      <!-- Miniatures -->
+      <div class="modal-thumbs" *ngIf="filteredPhotos().length > 1">
+        <div *ngFor="let photo of filteredPhotos(); let i = index"
+          class="thumb-item" [class.active]="i === activePhotoIndex"
+          (click)="activePhotoIndex = i">
+          <img [src]="baseUrl + photo.url">
+        </div>
+      </div>
+
+    </div>
+  </div>
 
   <div *ngIf="confirmDeleteShop" class="modal-overlay">
     <div class="modal-box">
-      <div class="modal-icon">🗑️</div>
+      <div class="modal-icon"><ng-icon name="trash"></ng-icon></div>
       <h3 class="modal-title">Confirmer la suppression</h3>
-      <p class="modal-text">
-        Voulez-vous vraiment supprimer la boutique <strong>{{ confirmDeleteShop.name }}</strong> ?
-        Cette action est irréversible.
-      </p>
+      <p class="modal-text">Voulez-vous vraiment supprimer la boutique <strong>{{ confirmDeleteShop.name }}</strong> ? Cette action est irréversible.</p>
       <div class="modal-actions">
         <button class="btn-cancel-modal" (click)="cancelDelete()">Annuler</button>
         <button class="btn-confirm-delete" (click)="confirmDelete()">Supprimer</button>

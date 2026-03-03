@@ -18,7 +18,7 @@
 
     <ng-container *ngIf="products$ | async as products">
       <div *ngIf="!products.length" class="bg-white rounded-2xl shadow-lg border border-slate-200 p-12 text-center">
-        <div class="text-6xl mb-4">📦</div>
+        <div class="text-6xl mb-4"><ng-icon name="cardboard" class="text-slate-300"></ng-icon></div>
         <h3 class="text-xl font-semibold text-slate-700">Aucun produit disponible pour cette boutique</h3>
       </div>
 
@@ -38,7 +38,7 @@
           </div>
 
           <div class="p-6 space-y-3">
-            <div class="text-slate-600 text-sm">Prix : <strong>{{ p.unityPrice }} €</strong></div>
+            <div class="text-slate-600 text-sm">Prix : <strong>{{ p.unityPrice }} MGA</strong></div>
             <div class="text-slate-600 text-sm" *ngIf="p.description">{{ p.description }}</div>
             <div class="flex items-center justify-between">
               <span class="text-sm px-2 py-1 rounded-full font-semibold"
@@ -48,7 +48,7 @@
                 }">
                 {{ p.status.label }}
               </span>
-              <!-- ✅ Bouton Voir plus -->
+              <!-- Bouton Voir plus -->
               <button *ngIf="p.photos?.length > 1"
                 (click)="openGallery(p)"
                 class="text-sm text-indigo-600 font-semibold hover:text-indigo-800 transition-colors">
@@ -63,7 +63,7 @@
   </div>
 </div>
 
-<!-- ✅ POPUP GALERIE -->
+<!-- POPUP GALERIE -->
 <div *ngIf="selectedProduct" class="modal-overlay" (click)="closeGallery()">
   <div class="modal-box" (click)="$event.stopPropagation()">
 
