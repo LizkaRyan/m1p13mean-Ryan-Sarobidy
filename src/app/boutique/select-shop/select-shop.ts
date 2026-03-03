@@ -8,13 +8,16 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { lucideBuilding } from '@ng-icons/lucide';
 
 @Component({
   selector: 'app-select-shop',
   templateUrl: './select-shop.html',
   styleUrls: ['./select-shop.css'],
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NgIconComponent],
   standalone: true,
+  providers: [provideIcons({ building: lucideBuilding})]
 })
 export class SelectShop implements OnInit {
 
