@@ -121,6 +121,7 @@ interface ShopReservation {
 interface RoomReservation {
   _id: string;
   name: string;
+  floor: number;
 }
 
 export interface Reservation {
