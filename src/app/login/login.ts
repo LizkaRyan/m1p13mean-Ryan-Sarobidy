@@ -15,8 +15,8 @@ import { AuthService } from '../../services/auth.service';
   imports: [FormsModule]
 })
 export class Login {
-  email: string = '';
-  password: string = '';
+  email: string = 'Admin@gmail.com';
+  password: string = 'itu16';
   private http = inject(HttpClient);
 
   constructor(private router: Router, private authService: AuthService) { }
