@@ -5,13 +5,17 @@ import { environment } from '../../environments/environment';
 import { Product } from '../../../types/api';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { lucideImage, lucidePackage } from '@ng-icons/lucide';
 
 @Component({
   selector: 'app-product-list',
   templateUrl: './product-list.html',
   styleUrls: ['./product-list.css'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule, NgIconComponent],
+  providers: [provideIcons({ cardboard: lucidePackage })]
+
 })
 export class ProductList implements OnInit {
   private productSubject = new BehaviorSubject<Product[]>([]);

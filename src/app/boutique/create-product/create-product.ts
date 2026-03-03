@@ -4,13 +4,16 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { lucideImage } from '@ng-icons/lucide';
 
 @Component({
   selector: 'app-create-product',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, NgIconComponent],
   templateUrl: './create-product.html',
-  styleUrls: ['./create-product.css']
+  styleUrls: ['./create-product.css'],
+  providers: [provideIcons({ exterior: lucideImage})]
 })
 export class CreateProduct implements OnInit {
 
