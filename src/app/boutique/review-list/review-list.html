@@ -18,12 +18,13 @@
       <div *ngFor="let review of reviews" class="review-row">
 
         <div class="reviewer-avatar">
-          {{ review.userId?.name?.charAt(0)?.toUpperCase() ?? '?' }}
+          {{ review.userId?.email?.charAt(0)?.toUpperCase() ?? '?' }}
         </div>
 
         <div class="review-body">
           <div class="review-top">
-            <span class="reviewer-name">{{ review.userId?.name ?? 'Anonyme' }}</span>
+            <span class="reviewer-name" style="display: block;">{{ review.userId?.email ?? 'Anonyme' }}</span>
+            <br>
             <span class="review-shop-tag">{{ review.shopId?.name }}</span>
             <div class="review-stars">
               <span *ngFor="let star of getStars(review.rating)"

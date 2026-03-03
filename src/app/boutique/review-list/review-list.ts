@@ -34,7 +34,10 @@ export class ReviewList implements OnInit {
     if (!userId) return;
 
     this.http.get<Review[]>(`${environment.baseUrl}/reviews/user/${userId}`).subscribe({
-      next: reviews => this.reviewSubject.next(reviews ?? []),
+      next: reviews => {
+        console.log('API retour:', reviews);
+        this.reviewSubject.next(reviews ?? []);
+      },      
       error: err => console.error('Erreur:', err)
     });
   }
