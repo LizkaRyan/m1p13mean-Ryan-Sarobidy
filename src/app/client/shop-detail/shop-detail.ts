@@ -49,6 +49,8 @@ export interface ShopAPI {
 export class ShopDetail implements OnInit {
   @Input() showActions: boolean = true;
 
+  baseUrl = environment.baseUrl;
+
   private shopSubject = new BehaviorSubject<Shop>(null);
   shop$ = this.shopSubject.asObservable();
   shopId: string;

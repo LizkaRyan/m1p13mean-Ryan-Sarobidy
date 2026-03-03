@@ -51,7 +51,7 @@
       <div class="grid grid-cols-3 gap-2">
         <div *ngFor="let photo of shop.photos; let i = index"
           class="relative aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-all">
-          <img [src]="photo.url" [alt]="photo.type.label" class="w-full h-full object-cover">
+          <img [src]="baseUrl + photo.url" [alt]="photo.type.label" class="w-full h-full object-cover">
           <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent flex items-end p-2">
             <span class="text-white text-xs font-bold">{{ photo.type.label }}</span>
           </div>
